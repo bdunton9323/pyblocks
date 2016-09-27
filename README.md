@@ -6,7 +6,7 @@ This is a tetris-like game I wrote in python using the pygame library.
 
 The game is self contained. To launch it, simply run:
 ```s
-> python blocks.py
+> python game.py
 ```
 
 The default key mappings are:
