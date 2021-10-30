@@ -26,7 +26,7 @@ class Geometry(object):
     return self.playing_field[0]
 
   def get_left_boundary_grid(self):
-    return self.get_left_boundary_px() / self.block_width
+    return self.get_left_boundary_px() // self.block_width
   
   def get_left_boundary_playing_field(self):
     return 0
@@ -38,17 +38,17 @@ class Geometry(object):
   def get_right_boundary_playing_field(self):
     # TODO: store the width and height in the constructor instead of calculating each time
     width_px = self.get_right_boundary_px() - self.get_left_boundary_px()
-    return width_px / self.block_width
+    return width_px // self.block_width
   
   def get_right_boundary_grid(self):
-    return self.get_right_boundary_px() / self.block_width
+    return self.get_right_boundary_px() // self.block_width
   
     
   def get_upper_boundary_px(self):
     return self.playing_field[1]
   
   def get_upper_boundary_grid(self):
-    return self.get_upper_boundary_px() / self.block_width
+    return self.get_upper_boundary_px() // self.block_width
   
   def get_upper_boundary_playing_field(self):
     return 0
@@ -58,8 +58,8 @@ class Geometry(object):
     return self.playing_field[3]
        
   def get_lower_boundary_grid(self):
-    return self.get_lower_boundary_px() / self.block_width
+    return self.get_lower_boundary_px() // self.block_width
     
   def get_lower_boundary_playing_field(self):
     height_px = self.get_lower_boundary_px() - self.get_upper_boundary_px()
-    return height_px / self.block_width
+    return height_px // self.block_width

@@ -31,8 +31,8 @@ class LeaderBoardScreen(object):
         
     screen_size = self.screen.get_size()
     text_size = self.banner_text.get_size() 
-    self.banner_x = screen_size[0] / 2 - text_size[0] / 2
-    self.banner_y = screen_size[1] / 16
+    self.banner_x = screen_size[0] // 2 - text_size[0] // 2
+    self.banner_y = screen_size[1] // 16
     
   def refresh_scores(self):
     scores = self.reader.read_scores()
@@ -55,10 +55,10 @@ class LeaderBoardScreen(object):
     self.screen.blit(self.banner_text, (self.banner_x, self.banner_y))
 
     screen_size = self.screen.get_size()
-    ordinal_col = screen_size[0] / 5
-    name_col = screen_size[0] / 3
-    score_col = screen_size[0] * 2 / 3
-    y = screen_size[1] / 4
+    ordinal_col = screen_size[0] // 5
+    name_col = screen_size[0] // 3
+    score_col = screen_size[0] * 2 // 3
+    y = screen_size[1] // 4
     for item in self.score_items:
       self.screen.blit(item[0], (ordinal_col, y))
       self.screen.blit(item[1], (name_col, y))

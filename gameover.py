@@ -31,8 +31,8 @@ class GameOverScreen(object):
         GameOverScreen.SUBBANNER_COLOR)
     screen_size = self.screen.get_size()
     font_size = self.subtitle.get_size()
-    x = screen_size[0] / 2 - font_size[0] / 2
-    y = screen_size[1] * 2 / 3 - font_size[1] / 2
+    x = screen_size[0] // 2 - font_size[0] // 2
+    y = screen_size[1] * 2 // 3 - font_size[1] // 2
     self.subtitle_loc = (x, y)
     
   def prerender(self):
@@ -42,10 +42,10 @@ class GameOverScreen(object):
         
     # Put the banner in the center left-to-right and a third of the way from the top
     screen_size = self.screen.get_size()
-    x = screen_size[0] / 2
-    y = screen_size[1] / 3
+    x = screen_size[0] // 2
+    y = screen_size[1] // 3
     banner_size = self.banner.get_size()
-    self.banner_loc = (x - (banner_size[0] / 2), y - (banner_size[1] / 2))
+    self.banner_loc = (x - (banner_size[0] // 2), y - (banner_size[1] // 2))
       
   def render(self):
     if self.score < 0:

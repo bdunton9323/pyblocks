@@ -91,8 +91,8 @@ class MenuScreen(object):
     
     # Get the upper left corner of where the text should go
     screen_size = self.screen.get_size()
-    x = screen_size[0] / 2 - font_size[0] / 2
-    y = screen_size[1] / 4 - font_size[1] / 2
+    x = screen_size[0] // 2 - font_size[0] // 2
+    y = screen_size[1] // 4 - font_size[1] // 2
     
     letters = list(MenuScreen.BANNER_TEXT)
     for letter, color in zip(letters, MenuScreen.BANNER_COLORS):
@@ -246,8 +246,8 @@ class StandardTextInitializer(object):
   
   def init_text(self):
     self.rendered = {}
-    center_x = self.screen_size[0] / 2
-    center_y = self.screen_size[1] / 2
+    center_x = self.screen_size[0] // 2
+    center_y = self.screen_size[1] // 2
 
     itemindex = 0
     self.text = {}
@@ -263,8 +263,8 @@ class StandardTextInitializer(object):
 
 def _build_menu_item(label, itemindex, center_x, center_y, font):
   text_size = font.size(label)
-  xpos = center_x - (text_size[0] / 2)
-  ypos = center_y - (text_size[1] / 2) + (MenuScreen.PADDING * itemindex)
+  xpos = center_x - (text_size[0] // 2)
+  ypos = center_y - (text_size[1] // 2) + (MenuScreen.PADDING * itemindex)
   return (
       font.render(label, 1, MenuScreen.TEXT_COLOR),
       # width of text
@@ -284,8 +284,8 @@ class LazyTextInitializer(object):
     self.toggler = toggler
     self.font = pygame.font.Font(font_file, 50)
     self.screen_size = screen_size
-    self.center_x = screen_size[0] / 2
-    self.center_y = screen_size[1] / 2
+    self.center_x = screen_size[0] // 2
+    self.center_y = screen_size[1] // 2
     self.rendered = {}
   
   # We will generate our own labels, so this is a no-op

@@ -37,26 +37,26 @@ class NameEntryScreen(object):
     self.static_items = []
     
     screen_size = self.screen.get_size()
-    center_x = screen_size[0] / 2
-    center_y = screen_size[1] / 2
+    center_x = screen_size[0] // 2
+    center_y = screen_size[1] // 2
     
     # TODO: I could cache the font to avoid loading it multiple times
     font = pygame.font.Font(self.font_file, 70)
     text = font.render(NameEntryScreen.MSG_1, 1, NameEntryScreen.TEXT_COLOR_1)
-    x = center_x - text.get_size()[0] / 2
-    y = screen_size[1] / 8
+    x = center_x - text.get_size()[0] // 2
+    y = screen_size[1] // 8
     self.static_items.append((text, (x, y)))
     
     font = pygame.font.Font(self.font_file, 50)
     text = font.render(NameEntryScreen.MSG_2, 1, NameEntryScreen.TEXT_COLOR_2)
-    x = center_x - text.get_size()[0] / 2
-    y = screen_size[1] / 4
+    x = center_x - text.get_size()[0] // 2
+    y = screen_size[1] // 4
     self.static_items.append((text, (x, y)))
     
     font = pygame.font.Font(self.font_file, 50)
     text = font.render(NameEntryScreen.MSG_3, 1, NameEntryScreen.TEXT_COLOR_3)
-    x = center_x - text.get_size()[0] / 2
-    y = screen_size[1] * 3 / 8
+    x = center_x - text.get_size()[0] // 2
+    y = screen_size[1] * 3 // 8
     self.static_items.append((text, (x, y)))
     
     self.init_entry_box(screen_size, center_x, screen_size[1])
@@ -70,8 +70,8 @@ class NameEntryScreen(object):
     
     # max text size n characters, plus half a character padding on each side
     width = self.char_size[0] * (NameEntryScreen.CHAR_LIMIT + 1)
-    height = self.char_size[1] * 3 / 2
-    self.entry_box = (center_x - width / 2, screen_height * 2 / 3, width, height)
+    height = self.char_size[1] * 3 // 2
+    self.entry_box = (center_x - width // 2, screen_height * 2 // 3, width, height)
 
   # return True if the game should stay on the score entry screen
   # return False if it is ok to get the name entered.
@@ -102,8 +102,8 @@ class NameEntryScreen(object):
     pygame.draw.rect(self.screen, NameEntryScreen.TEXT_BOX_COLOR, self.entry_box, 10)
     # typed text
     text = self.entry_font.render(self.entry_so_far, 1, NameEntryScreen.ENTRY_COLOR)
-    x = self.entry_box[0] + self.char_size[0] / 2
-    y = self.entry_box[1] + self.char_size[1] / 2
+    x = self.entry_box[0] + self.char_size[0] // 2
+    y = self.entry_box[1] + self.char_size[1] // 2
     self.screen.blit(text, (x,y))
     
   def get_and_clear_name_entered(self):

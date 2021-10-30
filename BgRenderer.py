@@ -134,10 +134,10 @@ class PauseOverlay(object):
     self.text = font.render(self.PAUSE_TEXT, 1, PauseOverlay.FONT_COLOR)
     text_size = font.size(self.PAUSE_TEXT)
     
-    center_x = (play_area_coords[0] + play_area_coords[2]) / 2
-    center_y = (play_area_coords[1] + play_area_coords[3]) / 2
-    self.text_x = center_x - (text_size[0] / 2)
-    self.text_y = center_y - (text_size[1] / 2)
+    center_x = (play_area_coords[0] + play_area_coords[2]) // 2
+    center_y = (play_area_coords[1] + play_area_coords[3]) // 2
+    self.text_x = center_x - (text_size[0] // 2)
+    self.text_y = center_y - (text_size[1] // 2)
     
     
   def render(self):
