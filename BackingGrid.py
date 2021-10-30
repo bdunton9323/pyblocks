@@ -1,4 +1,5 @@
 from Coordinate import Coordinate
+from functools import reduce
 
 # TODO:
 # There is a recurring pattern of iterating through the cells in a piece

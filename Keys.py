@@ -162,7 +162,7 @@ class KeyMapper(object):
     
   # key is a GameKeys value
   def get_key_function(self, key):
-    for f, k in self.keys.iteritems():
+    for f, k in self.keys.items():
       if k == key:
         return f
     return KeyFunction.INVALID
