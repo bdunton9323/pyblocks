@@ -53,7 +53,7 @@ class Constants:
   NAME_ENTRY_FONT_FILE = "gfx/font/crackman/crackman.ttf"
   # Use a monospace font here because there is a character limit for the name
   # entry, which needs to fit exactly within the text box.
-  NAME_ENTRY_TEXT_FONT_FILE = "gfx/font/BPMono/BPMono.ttf"
+  NAME_ENTRY_TEXT_FONT_FILE = "gfx/font/bpmono/BPmono.ttf"
   
   KEYS = GameKeys()
   

@@ -2,7 +2,8 @@ from Coordinate import Coordinate
 
 # TODO:
 # There is a recurring pattern of iterating through the cells in a piece
-# and tracking the grid coordinates along the way (see add() and is_collision()). I could write a generator that takes a piece and for each iteration gives me a tuple (grid_x, grid_y, filled?)
+# and tracking the grid coordinates along the way (see add() and is_collision()). I could write a generator that takes
+# a piece and for each iteration gives me a tuple (grid_x, grid_y, filled?)
 
         
 # flatten the grid into a list.
@@ -26,11 +27,11 @@ class BackingGrid(object):
     self.height = height
     self.grid = []
        
-    # The tuple is (filled?, y-grid(row), x-grid(col), color)
+    # The tuple is (filled?, y-grid (row), x-grid (col), color)
     # It might seem redundant to store the x,y in the tuple when the
     # position in self.grid is the same thing. It's so the renderer,
     # who only has access to the tuple, can see the grid-relative location
-    self.grid = [[(False,None,None,None) for col in xrange(width)] for row in xrange(height)]
+    self.grid = [[(False,None,None,None) for col in range(width)] for row in range(height)]
   
   def __iter__(self):
     return iter(_grid_as_list(self.grid))
@@ -121,7 +122,7 @@ class BackingGrid(object):
       fudge_coords(self.grid[dest], dest-src)
       src -= 1
       dest -= 1
-    for y in xrange(len(full_rows)):
+    for y in range(len(full_rows)):
       self.grid[y] = [(False,None,None,None)]*self.width
     
     return len(full_rows)

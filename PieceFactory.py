@@ -31,7 +31,7 @@ class PieceFactory(object):
     elif which_piece == 6:
       return Ell(self.geometry)
     else:
-      print "Error: piece type out of range"
+      print("Error: piece type out of range")
       raise ValueError("Piece type out of range. Was " + which_piece)
 
   def random_piece(self):

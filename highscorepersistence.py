@@ -10,7 +10,7 @@ def _parse_file(filename, num_scores):
         raise Exception("High score file is corrupt")
       scores.append((tokens[0], tokens[1]))
   # If the file contained too few scores, add empty entries
-  scores.extend([("...", 0) for x in xrange(num_scores - len(scores))])
+  scores.extend([("...", 0) for x in range(num_scores - len(scores))])
   return scores
     
 class HighScoreReader(object):
