@@ -30,20 +30,20 @@ class Coordinate:
     if type == Coordinate.PIXEL:
       return self.x
     elif type == Coordinate.GRID:
-      return self.x / self.geometry.get_block_width()
+      return self.x // self.geometry.get_block_width()
     elif type == Coordinate.PLAYING_FIELD:
-      grid_x = self.x / self.geometry.get_block_width()
-      grid_x_field = self.geometry.get_left_boundary_px() / self.geometry.get_block_width()
+      grid_x = self.x // self.geometry.get_block_width()
+      grid_x_field = self.geometry.get_left_boundary_px() // self.geometry.get_block_width()
       return grid_x - grid_x_field
     
   def getY(self, type):
     if type == Coordinate.PIXEL:
       return self.y
     elif type == Coordinate.GRID:
-      return self.y / self.geometry.get_block_height()  
+      return self.y // self.geometry.get_block_height()
     elif type == Coordinate.PLAYING_FIELD:
-      grid_y = self.y / self.geometry.get_block_height()
-      grid_y_field = self.geometry.get_upper_boundary_px() / self.geometry.get_block_height()
+      grid_y = self.y // self.geometry.get_block_height()
+      grid_y_field = self.geometry.get_upper_boundary_px() // self.geometry.get_block_height()
       return grid_y - grid_y_field
       
   def setX(self, new_x, type):
