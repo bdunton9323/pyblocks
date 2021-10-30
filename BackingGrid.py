@@ -56,6 +56,8 @@ class BackingGrid(object):
     for row in mask:
       for cell in row:
         if cell == 1:
+          if (self.grid[y_field][x_field][0] == True):
+            raise Exception('Tried to add a piece to a cell that was already occupied')
           self.grid[y_field][x_field] = (True, 
               x_field + x_offset, y_field + y_offset, piece.get_color())
         x_field += 1
