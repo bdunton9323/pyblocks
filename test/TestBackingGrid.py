@@ -88,22 +88,35 @@ class TestBackingGrid(unittest.TestCase):
     self.grid.add(box2)
 
   # add a piece that goes off screen
-  def test_edge_of_piece_out_of_bounds(self):
+  def test_piece_partially_out_of_bounds_right(self):
     box = Box(self.geo)
     box.setX(9) # this spot is in bounds, but the width of the shape pushes it out
     box.setY(0)
     self.assertRaisesRegex(Exception, '^.*out of bounds*$', lambda: self.grid.add(box))
 
-  def test_x_out_of_bounds(self):
+  # add a piece that goes off screen
+  def test_piece_partially_out_of_bounds_bottom(self):
+    box = Box(self.geo)
+    box.setX(0)
+    box.setY(9) # this spot is in bounds, but the height of the shape pushes it out
+    self.assertRaisesRegex(Exception, '^.*out of bounds*$', lambda: self.grid.add(box))
+
+  def test_piece_partially_out_of_bounds_left(self):
+      box = Box(self.geo)
+      box.setX(-1)
+      box.setY(0)
+      self.assertRaisesRegex(Exception, '^.*out of bounds*$', lambda: self.grid.add(box))
+
+  def test_piece_partially_out_of_bounds_top(self):
+    box = Box(self.geo)
+    box.setX(0)
+    box.setY(-1)
+    self.assertRaisesRegex(Exception, '^.*out of bounds*$', lambda: self.grid.add(box))
+
+  def test_piece_fully_out_of_bounds_right(self):
     box = Box(self.geo)
     box.setX(10)
     box.setY(0)
-    self.assertRaisesRegex(Exception, '^.*out of bounds*$', lambda: self.grid.add(box))
-
-  def test_y_out_of_bounds(self):
-    box = Box(self.geo)
-    box.setX(0)
-    box.setY(10)
     self.assertRaisesRegex(Exception, '^.*out of bounds*$', lambda: self.grid.add(box))
 
   def test_new_piece_completes_bottom_row(self):
@@ -125,6 +138,7 @@ class TestBackingGrid(unittest.TestCase):
       self.grid.add(box)
       self.assertEqual(1, self.grid.clear_filled_rows())
 
+      # how can I test without access to the underlying grid?
       self.fail("TOD: verify that everything else is shifted down")
 
   def test_new_piece_completes_top_row(self):
@@ -217,7 +231,7 @@ class TestBackingGrid(unittest.TestCase):
 
       self.fail("TOD: verify that everything else is shifted down")
 
-  def test_piece_completes_adjacent_rows(self):
+  def test_piece_completes_two_adjacent_rows(self):
       self.fail("TODO: implement me")
 
     
