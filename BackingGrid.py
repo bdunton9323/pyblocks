@@ -41,8 +41,7 @@ class BackingGrid(object):
     # for bounds checking, coords are based on playing field
     x = piece.getX(Coordinate.PLAYING_FIELD)
     y = piece.getY(Coordinate.PLAYING_FIELD)
-    if x >= self.width or x < 0 or y >= self.height or y < 0:
-      raise Exception('Piece out of bounds')
+    self.verify_in_bounds(x, y, piece)
 
     # Get the conversion offset for grid coords to playing field coords
     # Add this to field coords to get grid coords
@@ -64,7 +63,16 @@ class BackingGrid(object):
       x_field = x
       y_field += 1
 
-  
+  # Throws an exception if this piece does not fit in the play area
+  # target_x: the x-coordinate in the playing field to test
+  # target_y: the y-coordinate in the playing field to test
+  # piece: the piece to consider in the (target_x, target_y) position
+  def verify_in_bounds(self, target_x, target_y, piece):
+    width_oob = target_x < 0 or target_x + piece.get_width() > self.width
+    height_oob = target_y < 0 or target_y + piece.get_height() > self.height
+    if width_oob or height_oob:
+      raise Exception('Piece out of bounds')
+
   # checks whether a piece (represented by a bitmap) collides
   # with any other pieces in the board.
   # Assumptions: x must be in bounds. If y is negative, only the portion of the
@@ -90,12 +98,13 @@ class BackingGrid(object):
         backing_x += 1
       backing_y += 1
     return False
-  
+
+  # Clears any rows that are filled all the way across. Collapses everything above into those newly empty rows
   # Returns the number of rows that were cleared
   def clear_filled_rows(self):
     # full_indication[i] is True if grid[i] is full 
     full_indication = list(map(
-        lambda row: reduce(lambda prev,curr: prev == curr[0] == True, row, True),
+        lambda row: reduce(lambda prev, curr: prev == curr[0] == True, row, True),
         self.grid))
         
     # convert that indicator list into a list of indices
@@ -113,8 +122,7 @@ class BackingGrid(object):
         if cell[0]:
           row[pos] = (cell[0], cell[1], cell[2] + y_offset, cell[3])
           
-    # collapse from bottom to top
-    total_rows = len(self.grid)
+    # Collapse from bottom to top (top to bottom would require multiple passes if more than one row was cleared)
     dest = full_rows[-1]
     src = dest - 1
     while src >= 0:

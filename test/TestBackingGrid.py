@@ -92,7 +92,6 @@ class TestBackingGrid(unittest.TestCase):
     box = Box(self.geo)
     box.setX(9) # this spot is in bounds, but the width of the shape pushes it out
     box.setY(0)
-    # TODO: the logic in the grid is not quite right
     self.assertRaisesRegex(Exception, '^.*out of bounds*$', lambda: self.grid.add(box))
 
   def test_x_out_of_bounds(self):
@@ -108,23 +107,25 @@ class TestBackingGrid(unittest.TestCase):
     self.assertRaisesRegex(Exception, '^.*out of bounds*$', lambda: self.grid.add(box))
 
   def test_new_piece_completes_bottom_row(self):
-    bar1 = Bar(self.geo)
-    bar1.setX(0)
-    bar1.setY(9)
+      bar1 = Bar(self.geo)
+      bar1.setX(0)
+      bar1.setY(9)
 
-    bar2 = Bar(self.geo)
-    bar2.setX(bar1.get_width())
-    bar2.setY(9)
+      bar2 = Bar(self.geo)
+      bar2.setX(bar1.get_width())
+      bar2.setY(9)
 
-    box = Box(self.geo)
-    box.setX(bar1.get_width() + bar2.get_width())
-    box.setY(8)
+      box = Box(self.geo)
+      box.setX(bar1.get_width() + bar2.get_width())
+      box.setY(8)
 
-    self.grid.add(bar1)
-    self.grid.add(bar2)
-    self.assertEqual(0, self.grid.clear_filled_rows())
-    self.grid.add(box)
-    self.assertEqual(1, self.grid.clear_filled_rows())
+      self.grid.add(bar1)
+      self.grid.add(bar2)
+      self.assertEqual(0, self.grid.clear_filled_rows())
+      self.grid.add(box)
+      self.assertEqual(1, self.grid.clear_filled_rows())
+
+      self.fail("TOD: verify that everything else is shifted down")
 
   def test_new_piece_completes_top_row(self):
     bar1 = Bar(self.geo)
@@ -145,6 +146,8 @@ class TestBackingGrid(unittest.TestCase):
     self.assertEqual(0, self.grid.clear_filled_rows())
     self.grid.add(box)
     self.assertEqual(1, self.grid.clear_filled_rows())
+
+    self.fail("TOD: verify that everything above is shifted down, and nothing below is shifted")
 
   def test_new_piece_completes_nonbottom_row(self):
       # set up 2 horizontal bars that can be completed with a box
@@ -172,6 +175,8 @@ class TestBackingGrid(unittest.TestCase):
       self.assertEqual(0, self.grid.clear_filled_rows())
       self.grid.add(box2)
       self.assertEqual(1, self.grid.clear_filled_rows())
+
+      self.fail("TOD: verify that everything else is shifted down")
 
   # a piece causes two noncontiguous rows to be full
   def test_piece_completes_noncontiguous_rows(self):
@@ -210,13 +215,10 @@ class TestBackingGrid(unittest.TestCase):
       self.grid.add(vertical_bar2)
       self.assertEqual(2, self.grid.clear_filled_rows())
 
-  def test_piece_completes_two_rows(selfs):
-    pass
+      self.fail("TOD: verify that everything else is shifted down")
 
-  def print_grid(self, arr):
-    print("\n")
-    for row in arr:
-      print(row)
+  def test_piece_completes_adjacent_rows(self):
+      self.fail("TODO: implement me")
 
     
 if __name__ == '__main__':
