@@ -41,8 +41,8 @@ class BackingGrid(object):
     # for bounds checking, coords are based on playing field
     x = piece.getX(Coordinate.PLAYING_FIELD)
     y = piece.getY(Coordinate.PLAYING_FIELD)
-    if x > self.width or x < 0 or y > self.height or y < 0:
-      return
+    if x >= self.width or x < 0 or y >= self.height or y < 0:
+      raise Exception('Piece out of bounds')
 
     # Get the conversion offset for grid coords to playing field coords
     # Add this to field coords to get grid coords
@@ -91,20 +91,19 @@ class BackingGrid(object):
       backing_y += 1
     return False
   
-  # TODO: this could really use some unit tests for edge cases like: two
-  # noncontiguous rows filled, a row filled near the top, a row filled not
-  # at the bottom, etc.
-  # 
   # Returns the number of rows that were cleared
   def clear_filled_rows(self):
     # full_indication[i] is True if grid[i] is full 
-    full_indication = map(
+    full_indication = list(map(
         lambda row: reduce(lambda prev,curr: prev == curr[0] == True, row, True),
-        self.grid)
+        self.grid))
         
     # convert that indicator list into a list of indices
-    full_rows = [i for i,v in enumerate(full_indication) if full_indication[i]]
-    
+    full_rows = []
+    for i in range(0, self.height):
+      if full_indication[i]:
+        full_rows.append(i)
+
     if not full_rows:
       return 0
     
