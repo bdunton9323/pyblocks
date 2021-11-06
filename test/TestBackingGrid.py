@@ -14,6 +14,8 @@ from Tee import Tee
 class TestBackingGrid(unittest.TestCase):
     WIDTH = 10
     HEIGHT = 10
+    # a Piece bitmap for a single 1x1 block
+    SINGLE_BLOCK = [[1]]
 
     def setUp(self):
         self.grid = BackingGrid(TestBackingGrid.WIDTH, TestBackingGrid.HEIGHT)
@@ -121,14 +123,25 @@ class TestBackingGrid(unittest.TestCase):
         self.assertRaisesRegex(Exception, '^.*out of bounds*$', lambda: self.grid.add(box))
 
     def test_new_piece_completes_bottom_row(self):
+        # Before row cleared:
+        # y=8: ........33
+        # y=9: 1111222233
+
+        # After row cleared:
+        # y=8: ...........
+        # y=9: .........33
+
+        # piece 1
         bar1 = Bar(self.geo)
         bar1.setX(0)
         bar1.setY(9)
 
+        # piece 2
         bar2 = Bar(self.geo)
         bar2.setX(bar1.get_width())
         bar2.setY(9)
 
+        # piece 3
         box = Box(self.geo)
         box.setX(bar1.get_width() + bar2.get_width())
         box.setY(8)
@@ -139,18 +152,33 @@ class TestBackingGrid(unittest.TestCase):
         self.grid.add(box)
         self.assertEqual(1, self.grid.clear_filled_rows())
 
-        # how can I test without access to the underlying grid?
-        self.fail("TOD: verify that everything else is shifted down")
+        # this is the row that cleared
+        self.assert_row_empty(8)
+        # the top row of the box should have moved down one row
+        self.assert_row_state(9, [0, 0, 0, 0, 0, 0, 0, 0, 1, 1])
 
     def test_new_piece_completes_top_row(self):
+        # Before row cleared:
+        # y=0: 1111222233
+        # y=1: ........33
+        # y=2: ..........
+
+        # After row cleared:
+        # y=0: ..........
+        # y=1: ........33
+        # y=2: ..........
+
+        # piece 1
         bar1 = Bar(self.geo)
         bar1.setX(0)
         bar1.setY(0)
 
+        # piece 2
         bar2 = Bar(self.geo)
         bar2.setX(bar1.get_width())
         bar2.setY(0)
 
+        # piece 3
         box = Box(self.geo)
         box.setX(bar1.get_width() + bar2.get_width())
         box.setY(0)
@@ -162,10 +190,22 @@ class TestBackingGrid(unittest.TestCase):
         self.grid.add(box)
         self.assertEqual(1, self.grid.clear_filled_rows())
 
-        self.fail("TOD: verify that everything above is shifted down, and nothing below is shifted")
+        # since nothing is above the completed row, the bottom half of the box should be intact
+        self.assert_row_empty(0)
+        self.assert_row_state(1, [0, 0, 0, 0, 0, 0, 0, 0, 1, 1])
 
     def test_new_piece_completes_nonbottom_row(self):
-        # set up 2 horizontal bars that can be completed with a box
+        # Before row cleared:
+        # y=7: 11112222xx
+        # y=8: .....33.xx
+        # y=9: .....33...
+
+        # After row cleared:
+        # y=7: ..........
+        # y=8: .....33.xx
+        # y=9: .....33...
+
+        # pieces 1 and 2 in the above diagram
         bar = Bar(self.geo)
         bar.setX(0)
         bar.setY(7)
@@ -173,12 +213,12 @@ class TestBackingGrid(unittest.TestCase):
         bar2.setX(bar.get_width())
         bar2.setY(7)
 
-        # this is on the bottom, beneath the two horizontal bars
+        # piece 3 in the above diagram
         box = Box(self.geo)
         box.setX(5)
         box.setY(8)
 
-        # this completes row 7
+        # piece "x" above. This completes row 7.
         box2 = Box(self.geo)
         box2.setX(bar.get_width() + bar2.get_width())
         box2.setY(7)
@@ -191,31 +231,52 @@ class TestBackingGrid(unittest.TestCase):
         self.grid.add(box2)
         self.assertEqual(1, self.grid.clear_filled_rows())
 
-        self.fail("TOD: verify that everything else is shifted down")
+        # validate that nothing below the completed row changed
+        self.assert_row_empty(7)
+        self.assert_row_state(8, [0, 0, 0, 0, 0, 1, 1, 0, 1, 1])
+        self.assert_row_state(9, [0, 0, 0, 0, 0, 1, 1, 0, 0, 0])
 
     # a piece causes two noncontiguous rows to be full
     def test_piece_completes_noncontiguous_rows(self):
+        # Before rows cleared:
+        # y=6: ........56
+        # y=7: 3333444456
+        # y=8: ........56
+        # y=9: 1111222256
+
+        # After rows cleared:
+        # y=6: ..........
+        # y=7: ..........
+        # y=8: ........56
+        # y=9: ........56
+
+        # piece 1
         bottom_left_bar = Bar(self.geo)
         bottom_left_bar.setX(0)
         bottom_left_bar.setY(9)
 
+        # piece 2
         bottom_right_bar = Bar(self.geo)
         bottom_right_bar.setX(bottom_left_bar.get_width())
         bottom_right_bar.setY(9)
 
+        # piece 3
         top_left_bar = Bar(self.geo)
         top_left_bar.setX(0)
         top_left_bar.setY(7)
 
+        # piece 4
         top_right_bar = Bar(self.geo)
         top_right_bar.setX(top_left_bar.get_width())
         top_right_bar.setY(7)
 
+        # piece 5
         vertical_bar = Bar(self.geo)
         vertical_bar.rotate(1)
         vertical_bar.setX(8)
         vertical_bar.setY(6)
 
+        # piece 6
         vertical_bar2 = Bar(self.geo)
         vertical_bar2.rotate(1)
         vertical_bar2.setX(9)
@@ -230,10 +291,33 @@ class TestBackingGrid(unittest.TestCase):
         self.grid.add(vertical_bar2)
         self.assertEqual(2, self.grid.clear_filled_rows())
 
-        self.fail("TOD: verify that everything else is shifted down")
+        self.assert_row_empty(6)
+        self.assert_row_empty(7)
+        self.assert_row_state(8, [0, 0, 0, 0, 0, 0, 0, 0, 1, 1])
+        self.assert_row_state(9, [0, 0, 0, 0, 0, 0, 0, 0, 1, 1])
 
-    def test_piece_completes_two_adjacent_rows(self):
-        self.fail("TODO: implement me")
+    # helper for checking what is in a single cell
+    def assert_space_empty(self, x, y):
+        self.assertFalse(self.grid.is_collision(x, y, self.SINGLE_BLOCK),
+                         f"Space ({x},{y}) was not empty but should have been")
+
+    # helper for checking what is in a single cell
+    def assert_space_filled(self, x, y):
+        self.assertTrue(self.grid.is_collision(x, y, self.SINGLE_BLOCK))
+
+    def assert_row_empty(self, row):
+        for x in range(self.WIDTH):
+            self.assert_space_empty(x, row)
+
+    def assert_row_state(self, rownum, expected_state):
+        for i in range(len(expected_state)):
+            cell = expected_state[i]
+            if cell == 1:
+                self.assert_space_filled(i, rownum)
+            elif cell == 0:
+                self.assert_space_empty(i, rownum)
+            else:
+                self.fail(f"Unexpected test input: {cell}")
 
 
 if __name__ == '__main__':
