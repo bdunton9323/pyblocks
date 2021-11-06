@@ -66,7 +66,7 @@ def init_pygame():
   
   pygame.init()
   screen = pygame.display.set_mode(Constants.SCREEN_SIZE, pygame.DOUBLEBUF, 32)
-  pygame.display.set_caption("Tetrominoes!");
+  pygame.display.set_caption("PyBlocks");
   
   params = GameParams()
   params.set_screen(screen)
