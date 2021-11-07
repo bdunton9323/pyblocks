@@ -10,7 +10,8 @@ from Box import Box
 from Tee import Tee
 
 
-# TODO: the code would be more testable if I could mock the Piece class and create pieces of arbitrary size
+# the code would be more testable if I could mock the Piece class and create pieces of arbitrary size,
+# but this works well enough.
 class TestBackingGrid(unittest.TestCase):
     WIDTH = 10
     HEIGHT = 10
