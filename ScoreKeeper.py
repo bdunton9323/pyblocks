@@ -37,6 +37,7 @@ class ScoreKeeper(object):
         self.difficulty = ScoreKeeper.calculate_difficulty(self.rows)
         return self.difficulty
 
+    # Maybe award bonus points for dropping the piece (player is rewarded for playing quickly)
     # num_clicks - the distance the piece has fallen. Score is skewed such
     #   that the higher the piece is dropped from, the more points.
     def on_drop(self, num_clicks):
@@ -58,4 +59,4 @@ class ScoreKeeper(object):
     # TODO: this doesn't seem like it should be the job of the score keeper.
     @staticmethod
     def calculate_difficulty(rows):
-        return rows / ScoreKeeper.ROWS_PER_LEVEL + 1
+        return rows // ScoreKeeper.ROWS_PER_LEVEL + 1
