@@ -1,1 +1,6 @@
-*.pyc
+.venv
+.idea
+.python-version
+pyblocks.egg-info/
+**/__pycache__
+**/*.pyc
