@@ -1,11 +1,11 @@
 import random
-from . Tee import Tee
-from . Ess import Ess
-from . Zee import Zee
-from . Bar import Bar
-from . Box import Box
-from . Jay import Jay
-from . Ell import Ell
+from pyblocks.pieces.Tee import Tee
+from pyblocks.pieces.Ess import Ess
+from pyblocks.pieces.Zee import Zee
+from pyblocks.pieces.Bar import Bar
+from pyblocks.pieces.Box import Box
+from pyblocks.pieces.Jay import Jay
+from pyblocks.pieces.Ell import Ell
 
 class PieceFactory(object):
   # The number of different pieces possible

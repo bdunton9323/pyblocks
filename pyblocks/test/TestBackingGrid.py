@@ -1,10 +1,10 @@
 import unittest
 
-from .. BackingGrid import BackingGrid
-from .. Geometry import Geometry
-from .. Bar import Bar
-from .. Box import Box
-from .. Tee import Tee
+from pyblocks.BackingGrid import BackingGrid
+from pyblocks.Geometry import Geometry
+from pyblocks.pieces.Bar import Bar
+from pyblocks.pieces.Box import Box
+from pyblocks.pieces.Tee import Tee
 
 
 # the code would be more testable if I could mock the Piece class and create pieces of arbitrary size,

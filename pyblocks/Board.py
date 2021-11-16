@@ -1,10 +1,9 @@
-from collections import deque
 from collections import namedtuple
 
 from . IncomingQueue import IncomingQueue
 from . BackingGrid import BackingGrid
 from . Coordinate import Coordinate
-from . Piece import Piece
+from pyblocks.pieces.Piece import Piece
 
 # The result upon landing a piece
 PlayOutcome = namedtuple("PlayOutcome", ["still_playing", "num_rows"])

@@ -1,4 +1,4 @@
-from . Piece import Piece
+from pyblocks.pieces.Piece import Piece
 
 class Ess(Piece):
   

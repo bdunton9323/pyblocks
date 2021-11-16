@@ -1,4 +1,4 @@
-from . Coordinate import Coordinate
+from pyblocks.Coordinate import Coordinate
 
 class Piece(object):
 

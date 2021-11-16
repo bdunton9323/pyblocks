@@ -1,8 +1,8 @@
 import unittest
-from .. Piece import Piece
-from .. Bar import Bar
-from .. Tee import Tee
-from .. Geometry import Geometry
+from pyblocks.pieces.Piece import Piece
+from pyblocks.pieces.Bar import Bar
+from pyblocks.pieces.Tee import Tee
+from pyblocks.Geometry import Geometry
 
 class TestRotations(unittest.TestCase):
   

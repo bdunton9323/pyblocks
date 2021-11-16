@@ -1,6 +1,6 @@
 import unittest
-from .. Coordinate import Coordinate
-from .. Geometry import Geometry
+from pyblocks.Coordinate import Coordinate
+from pyblocks.Geometry import Geometry
 
 class TestCoordinate(unittest.TestCase):
 
