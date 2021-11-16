@@ -15,5 +15,6 @@ python -m pip install --upgrade pip
 
 pip install wheel
 pip install pygame
+pip install nose
 
 echo "Use python game.py to start the game"

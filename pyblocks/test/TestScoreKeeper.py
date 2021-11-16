@@ -1,10 +1,5 @@
 import unittest
-
-import sys
-import os
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
-
-from ScoreKeeper import ScoreKeeper
+from .. ScoreKeeper import ScoreKeeper
 
 class TestScoreKeeper(unittest.TestCase):
 

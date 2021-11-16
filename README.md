@@ -29,5 +29,9 @@ The default key mappings are:
  - `space` - drop the piece
  - `esc` - go to menu
 
- 
+# Development
+## Running the tests
+```shell
+(.venv) $ python setup.py test
+``` 
 

@@ -1,6 +1,6 @@
-from MenuScreen import MenuScreen
-from gameover import GameOverScreen
-from Keys import GameKeys
+from . MenuScreen import MenuScreen
+from . gameover import GameOverScreen
+from . Keys import GameKeys
 
 # Enum specifying what state the game is in
 class Mode:

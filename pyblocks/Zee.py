@@ -1,13 +1,15 @@
-from Piece import Piece
+from . Piece import Piece
 
-class Ess(Piece):
+class Zee(Piece):
+  
+  # TODO: all the Piece classes should probably be in the same file so it isn't so cumbersome. They are small enough.
   
   def __init__(self, geometry):
-    super(Ess, self).__init__(geometry)
-
+    super(Zee, self).__init__(geometry)
+    
   fill_arrays = [
-    [[0,1,1],[1,1,0]],
-    [[1,0],[1,1],[0,1]]
+    [[1,1,0],[0,1,1]],
+    [[0,1],[1,1],[1,0]]
   ]
   
   # see 'Tee' class's rotation table for an explanation
@@ -17,7 +19,7 @@ class Ess(Piece):
     # currently pointing right
     [(0,0),(0,0)],
   ]
-  
+    
   def get_fill_arrays(self):
     return self.fill_arrays
     
@@ -25,4 +27,4 @@ class Ess(Piece):
     return self.rotation_table[oldindex][newindex]
     
   def get_color(self):
-    return 'red'
+    return 'orange'

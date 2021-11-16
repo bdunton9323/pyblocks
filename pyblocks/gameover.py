@@ -1,6 +1,6 @@
 import pygame
 
-from Keys import GameKeys
+from . Keys import GameKeys
 
 class GameOverScreen(object):
   BG_COLOR = (0,0,0)

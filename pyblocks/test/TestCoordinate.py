@@ -1,9 +1,6 @@
 import unittest
-
-import sys, os
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
-from Coordinate import Coordinate
-from Geometry import Geometry
+from .. Coordinate import Coordinate
+from .. Geometry import Geometry
 
 class TestCoordinate(unittest.TestCase):
 

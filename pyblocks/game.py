@@ -1,21 +1,21 @@
 import pygame
 from collections import namedtuple
 
-from BlockRenderer import BlockRenderer
-from BgRenderer import BgRenderer
-from Board import Board
-from Gameplay import Gameplay
-from Keys import *
-from GameParams import GameParams
-from Geometry import Geometry
-from highscorepersistence import *
-from LeaderBoardScreen import LeaderBoardScreen
-from MenuScreen import MenuScreen
-from ScoreKeeper import ScoreKeeper
-from NameEntryScreen import NameEntryScreen
-from gameover import GameOverScreen
-from eventhandlers import *
-from audio import *
+from . BlockRenderer import BlockRenderer
+from . BgRenderer import BgRenderer
+from . Board import Board
+from . Gameplay import Gameplay
+from . Keys import *
+from . GameParams import GameParams
+from . Geometry import Geometry
+from . highscorepersistence import *
+from . LeaderBoardScreen import LeaderBoardScreen
+from . MenuScreen import MenuScreen
+from . ScoreKeeper import ScoreKeeper
+from . NameEntryScreen import NameEntryScreen
+from . gameover import GameOverScreen
+from . eventhandlers import *
+from . audio import *
 
 class Constants:
   FRAME_RATE = 60

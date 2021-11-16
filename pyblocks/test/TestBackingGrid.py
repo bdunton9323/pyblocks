@@ -1,13 +1,10 @@
 import unittest
 
-import sys, os
-
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
-from BackingGrid import BackingGrid
-from Geometry import Geometry
-from Bar import Bar
-from Box import Box
-from Tee import Tee
+from .. BackingGrid import BackingGrid
+from .. Geometry import Geometry
+from .. Bar import Bar
+from .. Box import Box
+from .. Tee import Tee
 
 
 # the code would be more testable if I could mock the Piece class and create pieces of arbitrary size,

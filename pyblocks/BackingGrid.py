@@ -1,5 +1,5 @@
-from Coordinate import Coordinate
 from functools import reduce
+from . Coordinate import Coordinate
 
 
 # TODO:

@@ -1,11 +1,8 @@
 import unittest
-
-import sys, os
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
-from Piece import Piece
-from Bar import Bar
-from Tee import Tee
-from Geometry import Geometry
+from .. Piece import Piece
+from .. Bar import Bar
+from .. Tee import Tee
+from .. Geometry import Geometry
 
 class TestRotations(unittest.TestCase):
   

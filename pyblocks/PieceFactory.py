@@ -1,11 +1,11 @@
 import random
-from Tee import Tee
-from Ess import Ess
-from Zee import Zee
-from Bar import Bar
-from Box import Box
-from Jay import Jay
-from Ell import Ell
+from . Tee import Tee
+from . Ess import Ess
+from . Zee import Zee
+from . Bar import Bar
+from . Box import Box
+from . Jay import Jay
+from . Ell import Ell
 
 class PieceFactory(object):
   # The number of different pieces possible

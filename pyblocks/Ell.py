@@ -1,4 +1,4 @@
-from Piece import Piece
+from . Piece import Piece
 
 class Ell(Piece):
   

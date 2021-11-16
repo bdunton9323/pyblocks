@@ -1,6 +1,6 @@
-from PieceFactory import PieceFactory  
-from Board import PlayOutcome
-from Keys import KeyFunction
+from . PieceFactory import PieceFactory
+from . Board import PlayOutcome
+from . Keys import KeyFunction
 
 class Gameplay(object):
 
