@@ -10,5 +10,6 @@ setup(name='pyblocks',
       install_requires=['wheel', 'pygame>=2.0.2', 'nose'],
       test_suite='nose.collector',
       tests_require=['nose'],
+      # TODO: this is not quite right. Not sure if I even need a setup.py for this.
       scripts=['bin/pyblocks.sh'],
 )
