@@ -7,8 +7,8 @@ pyenv local 3.9.5
 sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libfreetype6-dev python3-setuptools python3-dev python3 libportmidi-dev
 sudo apt-get build-dep libsdl2 libsdl2-image libsdl2-mixer libsdl2-ttf libfreetype6 python3 libportmidi0
 
+# TODO: only do this if not already in the virtualenv. A method of doing that: https://stackoverflow.com/a/42580137
 python -m venv .venv
-
 source .venv/bin/activate
 
 python -m pip install --upgrade pip

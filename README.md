@@ -32,6 +32,6 @@ The default key mappings are:
 # Development
 ## Running the tests
 ```shell
-(.venv) $ python setup.py test
+(.venv) $ python -m unittest test/*.py
 ``` 
 
