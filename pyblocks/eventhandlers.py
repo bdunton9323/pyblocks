@@ -1,5 +1,5 @@
-from . MenuScreen import MenuScreen
-from . gameover import GameOverScreen
+from screens.MenuScreen import MenuScreen
+from screens.gameover import GameOverScreen
 from . Keys import GameKeys
 
 # Enum specifying what state the game is in

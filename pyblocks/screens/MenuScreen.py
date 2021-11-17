@@ -1,7 +1,7 @@
 import pygame
 
-from . Keys import GameKeys
-from . Keys import KeyFunction
+from Keys import GameKeys
+from Keys import KeyFunction
   
 class MenuScreen(object):
   TEXT_COLOR = (128, 255, 255)

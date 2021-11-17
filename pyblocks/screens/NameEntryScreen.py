@@ -1,6 +1,6 @@
 import pygame
 
-from . Keys import GameKeys
+from Keys import GameKeys
 
 # handles entry of user initials
 class NameEntryScreen(object):

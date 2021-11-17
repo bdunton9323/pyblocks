@@ -8,9 +8,9 @@ from geometry.Geometry import Geometry
 from scoreboard.highscorepersistence import *
 from scoreboard.LeaderBoardScreen import LeaderBoardScreen
 from pyblocks.ScoreKeeper import ScoreKeeper
-from pyblocks.NameEntryScreen import NameEntryScreen
+from screens.NameEntryScreen import NameEntryScreen
 from pyblocks.eventhandlers import *
-from pyblocks.audio import *
+from sound.audio import *
 
 class Constants:
   FRAME_RATE = 60
