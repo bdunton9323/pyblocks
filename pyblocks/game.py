@@ -1,6 +1,3 @@
-import pygame
-from collections import namedtuple
-
 from pyblocks.BlockRenderer import BlockRenderer
 from pyblocks.BgRenderer import BgRenderer
 from pyblocks.Board import Board
@@ -8,12 +5,10 @@ from pyblocks.Gameplay import Gameplay
 from pyblocks.Keys import *
 from pyblocks.GameParams import GameParams
 from pyblocks.Geometry import Geometry
-from pyblocks.highscorepersistence import *
-from pyblocks.LeaderBoardScreen import LeaderBoardScreen
-from pyblocks.MenuScreen import MenuScreen
+from scoreboard.highscorepersistence import *
+from scoreboard.LeaderBoardScreen import LeaderBoardScreen
 from pyblocks.ScoreKeeper import ScoreKeeper
 from pyblocks.NameEntryScreen import NameEntryScreen
-from pyblocks.gameover import GameOverScreen
 from pyblocks.eventhandlers import *
 from pyblocks.audio import *
 
