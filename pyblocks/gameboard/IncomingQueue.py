@@ -30,10 +30,10 @@ class IncomingQueue(object):
 
     # Get the first piece in queue and put the given piece at the end
     def play_next_piece(self, new_piece):
-        next = self.queue.popleft()
+        next_piece = self.queue.popleft()
         self.queue.append(new_piece)
 
         # shift the pieces up so the next is always on top
         self.place_on_screen()
 
-        return next
+        return next_piece
