@@ -1,7 +1,7 @@
 import unittest
 
-from pyblocks.BackingGrid import BackingGrid
-from pyblocks.Geometry import Geometry
+from gameboard.BackingGrid import BackingGrid
+from geometry.Geometry import Geometry
 from pyblocks.pieces.Bar import Bar
 from pyblocks.pieces.Box import Box
 from pyblocks.pieces.Tee import Tee

@@ -1,5 +1,5 @@
 from functools import reduce
-from . Coordinate import Coordinate
+from geometry.Coordinate import Coordinate
 
 
 # TODO:

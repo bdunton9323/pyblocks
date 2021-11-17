@@ -1,5 +1,5 @@
 from collections import deque
-from . Coordinate import Coordinate
+from geometry.Coordinate import Coordinate
 
 class IncomingQueue(object):
 

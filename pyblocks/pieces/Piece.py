@@ -1,6 +1,6 @@
 import pygame
 
-from pyblocks.Coordinate import Coordinate
+from geometry.Coordinate import Coordinate
 
 
 class Piece(object):

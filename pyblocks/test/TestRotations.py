@@ -2,7 +2,7 @@ import unittest
 from pyblocks.pieces.Piece import Piece
 from pyblocks.pieces.Bar import Bar
 from pyblocks.pieces.Tee import Tee
-from pyblocks.Geometry import Geometry
+from geometry.Geometry import Geometry
 
 class TestRotations(unittest.TestCase):
   

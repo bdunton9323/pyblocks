@@ -1,8 +1,8 @@
 from collections import namedtuple
 
-from . IncomingQueue import IncomingQueue
-from . BackingGrid import BackingGrid
-from . Coordinate import Coordinate
+from gameboard.IncomingQueue import IncomingQueue
+from gameboard.BackingGrid import BackingGrid
+from geometry.Coordinate import Coordinate
 from pyblocks.pieces.Piece import Piece
 
 # The result upon landing a piece
