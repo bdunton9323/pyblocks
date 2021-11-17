@@ -21,8 +21,8 @@ class TestBackingGrid(unittest.TestCase):
 
     def test_ieterate_over_nonempty_grid(self):
         box = Box(self.geo)
-        box.setX(0)
-        box.setY(0)
+        box.set_x(0)
+        box.set_y(0)
         self.grid.add(box)
 
         actual_list = list(self.grid)
@@ -47,8 +47,8 @@ class TestBackingGrid(unittest.TestCase):
 
     def test_box_collision(self):
         box = Box(self.geo)
-        box.setX(0)
-        box.setY(0)
+        box.set_x(0)
+        box.set_y(0)
         self.grid.add(box)
 
         self.assertTrue(self.grid.is_collision(1, 1, box.get_fill_mask()))
@@ -66,24 +66,24 @@ class TestBackingGrid(unittest.TestCase):
 
     def test_add_overlapping(self):
         box1 = Box(self.geo)
-        box1.setX(0)
-        box1.setY(0)
+        box1.set_x(0)
+        box1.set_y(0)
 
         box2 = Box(self.geo)
-        box2.setX(1)
-        box2.setY(1)
+        box2.set_x(1)
+        box2.set_y(1)
 
         self.grid.add(box1)
         self.assertRaisesRegex(Exception, '^.*already occupied.*$', lambda: self.grid.add(box2))
 
     def test_add_adjacent(self):
         box1 = Box(self.geo)
-        box1.setX(0)
-        box1.setY(0)
+        box1.set_x(0)
+        box1.set_y(0)
 
         box2 = Box(self.geo)
-        box2.setX(2)
-        box2.setY(1)
+        box2.set_x(2)
+        box2.set_y(1)
         self.grid.add(box1)
         # we're just testing that this doesn't raise
         self.grid.add(box2)
@@ -91,33 +91,33 @@ class TestBackingGrid(unittest.TestCase):
     # add a piece that goes off screen
     def test_piece_partially_out_of_bounds_right(self):
         box = Box(self.geo)
-        box.setX(9)  # this spot is in bounds, but the width of the shape pushes it out
-        box.setY(0)
+        box.set_x(9)  # this spot is in bounds, but the width of the shape pushes it out
+        box.set_y(0)
         self.assertRaisesRegex(Exception, '^.*out of bounds*$', lambda: self.grid.add(box))
 
     # add a piece that goes off screen
     def test_piece_partially_out_of_bounds_bottom(self):
         box = Box(self.geo)
-        box.setX(0)
-        box.setY(9)  # this spot is in bounds, but the height of the shape pushes it out
+        box.set_x(0)
+        box.set_y(9)  # this spot is in bounds, but the height of the shape pushes it out
         self.assertRaisesRegex(Exception, '^.*out of bounds*$', lambda: self.grid.add(box))
 
     def test_piece_partially_out_of_bounds_left(self):
         box = Box(self.geo)
-        box.setX(-1)
-        box.setY(0)
+        box.set_x(-1)
+        box.set_y(0)
         self.assertRaisesRegex(Exception, '^.*out of bounds*$', lambda: self.grid.add(box))
 
     def test_piece_partially_out_of_bounds_top(self):
         box = Box(self.geo)
-        box.setX(0)
-        box.setY(-1)
+        box.set_x(0)
+        box.set_y(-1)
         self.assertRaisesRegex(Exception, '^.*out of bounds*$', lambda: self.grid.add(box))
 
     def test_piece_fully_out_of_bounds_right(self):
         box = Box(self.geo)
-        box.setX(10)
-        box.setY(0)
+        box.set_x(10)
+        box.set_y(0)
         self.assertRaisesRegex(Exception, '^.*out of bounds*$', lambda: self.grid.add(box))
 
     def test_new_piece_completes_bottom_row(self):
@@ -131,18 +131,18 @@ class TestBackingGrid(unittest.TestCase):
 
         # piece 1
         bar1 = Bar(self.geo)
-        bar1.setX(0)
-        bar1.setY(9)
+        bar1.set_x(0)
+        bar1.set_y(9)
 
         # piece 2
         bar2 = Bar(self.geo)
-        bar2.setX(bar1.get_width())
-        bar2.setY(9)
+        bar2.set_x(bar1.get_width())
+        bar2.set_y(9)
 
         # piece 3
         box = Box(self.geo)
-        box.setX(bar1.get_width() + bar2.get_width())
-        box.setY(8)
+        box.set_x(bar1.get_width() + bar2.get_width())
+        box.set_y(8)
 
         self.grid.add(bar1)
         self.grid.add(bar2)
@@ -168,18 +168,18 @@ class TestBackingGrid(unittest.TestCase):
 
         # piece 1
         bar1 = Bar(self.geo)
-        bar1.setX(0)
-        bar1.setY(0)
+        bar1.set_x(0)
+        bar1.set_y(0)
 
         # piece 2
         bar2 = Bar(self.geo)
-        bar2.setX(bar1.get_width())
-        bar2.setY(0)
+        bar2.set_x(bar1.get_width())
+        bar2.set_y(0)
 
         # piece 3
         box = Box(self.geo)
-        box.setX(bar1.get_width() + bar2.get_width())
-        box.setY(0)
+        box.set_x(bar1.get_width() + bar2.get_width())
+        box.set_y(0)
 
         self.grid.add(bar1)
         self.grid.add(bar2)
@@ -205,21 +205,21 @@ class TestBackingGrid(unittest.TestCase):
 
         # pieces 1 and 2 in the above diagram
         bar = Bar(self.geo)
-        bar.setX(0)
-        bar.setY(7)
+        bar.set_x(0)
+        bar.set_y(7)
         bar2 = Bar(self.geo)
-        bar2.setX(bar.get_width())
-        bar2.setY(7)
+        bar2.set_x(bar.get_width())
+        bar2.set_y(7)
 
         # piece 3 in the above diagram
         box = Box(self.geo)
-        box.setX(5)
-        box.setY(8)
+        box.set_x(5)
+        box.set_y(8)
 
         # piece "x" above. This completes row 7.
         box2 = Box(self.geo)
-        box2.setX(bar.get_width() + bar2.get_width())
-        box2.setY(7)
+        box2.set_x(bar.get_width() + bar2.get_width())
+        box2.set_y(7)
 
         self.grid.add(bar)
         self.grid.add(bar2)
@@ -250,35 +250,35 @@ class TestBackingGrid(unittest.TestCase):
 
         # piece 1
         bottom_left_bar = Bar(self.geo)
-        bottom_left_bar.setX(0)
-        bottom_left_bar.setY(9)
+        bottom_left_bar.set_x(0)
+        bottom_left_bar.set_y(9)
 
         # piece 2
         bottom_right_bar = Bar(self.geo)
-        bottom_right_bar.setX(bottom_left_bar.get_width())
-        bottom_right_bar.setY(9)
+        bottom_right_bar.set_x(bottom_left_bar.get_width())
+        bottom_right_bar.set_y(9)
 
         # piece 3
         top_left_bar = Bar(self.geo)
-        top_left_bar.setX(0)
-        top_left_bar.setY(7)
+        top_left_bar.set_x(0)
+        top_left_bar.set_y(7)
 
         # piece 4
         top_right_bar = Bar(self.geo)
-        top_right_bar.setX(top_left_bar.get_width())
-        top_right_bar.setY(7)
+        top_right_bar.set_x(top_left_bar.get_width())
+        top_right_bar.set_y(7)
 
         # piece 5
         vertical_bar = Bar(self.geo)
         vertical_bar.rotate(1)
-        vertical_bar.setX(8)
-        vertical_bar.setY(6)
+        vertical_bar.set_x(8)
+        vertical_bar.set_y(6)
 
         # piece 6
         vertical_bar2 = Bar(self.geo)
         vertical_bar2.rotate(1)
-        vertical_bar2.setX(9)
-        vertical_bar2.setY(6)
+        vertical_bar2.set_x(9)
+        vertical_bar2.set_y(6)
 
         self.grid.add(bottom_left_bar)
         self.grid.add(bottom_right_bar)

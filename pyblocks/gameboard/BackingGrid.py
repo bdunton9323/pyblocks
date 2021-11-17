@@ -41,14 +41,14 @@ class BackingGrid(object):
 
     def add(self, piece):
         # for bounds checking, coords are based on playing field
-        x = piece.getX(Coordinate.PLAYING_FIELD)
-        y = piece.getY(Coordinate.PLAYING_FIELD)
+        x = piece.get_x(Coordinate.PLAYING_FIELD)
+        y = piece.get_y(Coordinate.PLAYING_FIELD)
         self.verify_in_bounds(x, y, piece)
 
         # Get the conversion offset for grid coords to playing field coords
         # Add this to field coords to get grid coords
-        x_offset = piece.getX(Coordinate.GRID) - x
-        y_offset = piece.getY(Coordinate.GRID) - y
+        x_offset = piece.get_x(Coordinate.GRID) - x
+        y_offset = piece.get_y(Coordinate.GRID) - y
 
         # break apart the piece into individual cells
         mask = piece.get_fill_mask()

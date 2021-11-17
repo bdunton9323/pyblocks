@@ -24,9 +24,9 @@ class BlockRenderer:
         block = self.blocks[piece.get_color()]
         fill_mask = piece.get_fill_mask()
 
-        curr_y = piece.getY() * self.geometry.get_block_height()
+        curr_y = piece.get_y() * self.geometry.get_block_height()
         for row in fill_mask:
-            curr_x = piece.getX() * self.geometry.get_block_width()
+            curr_x = piece.get_x() * self.geometry.get_block_width()
             for position in row:
                 if position:
                     self.screen.blit(block, [curr_x, curr_y])

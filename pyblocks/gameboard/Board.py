@@ -32,8 +32,8 @@ class Board:
             self.incoming_panel_pos, Board.MAX_PIECE_HEIGHT,
             starting_queue)
         self.active_piece = active_piece
-        self.active_piece.setX(self.active_piece_start.getX(Coordinate.GRID))
-        self.active_piece.setY(self.active_piece_start.getY(Coordinate.GRID))
+        self.active_piece.set_x(self.active_piece_start.getX(Coordinate.GRID))
+        self.active_piece.set_y(self.active_piece_start.getY(Coordinate.GRID))
 
     # This must be called whenever a piece lands
     def on_piece_landed(self):
@@ -50,20 +50,20 @@ class Board:
         # make the next piece active
         piece = self.incoming_queue.play_next_piece(
             piece_factory.random_piece())
-        piece.setX(self.active_piece_start.getX(Coordinate.GRID))
-        piece.setY(self.active_piece_start.getY(Coordinate.GRID))
+        piece.set_x(self.active_piece_start.getX(Coordinate.GRID))
+        piece.set_y(self.active_piece_start.getY(Coordinate.GRID))
         self.active_piece = piece
 
     # makes the piece fall one click farther
     def advance_piece(self):
         if self.piece_can_move_down(self.active_piece):
-            self.active_piece.setY(self.active_piece.getY() + 1)
+            self.active_piece.set_y(self.active_piece.get_y() + 1)
             return True
         return False
 
     def piece_can_move_down(self, piece):
         # for now just let it fall to the bottom
-        piece_bottom = piece.getY() + piece.get_height()
+        piece_bottom = piece.get_y() + piece.get_height()
         if piece_bottom >= self.geometry.get_lower_boundary_grid():
             return False
         elif self.collided_down(piece):
@@ -72,28 +72,28 @@ class Board:
             return True
 
     def collided_down(self, piece):
-        new_y = piece.getY(Coordinate.PLAYING_FIELD) + 1
-        return self.backing_grid.is_collision(piece.getX(Coordinate.PLAYING_FIELD),
+        new_y = piece.get_y(Coordinate.PLAYING_FIELD) + 1
+        return self.backing_grid.is_collision(piece.get_x(Coordinate.PLAYING_FIELD),
                                               new_y, piece.get_fill_mask())
 
     def move_left(self):
         if self.can_move_left(self.active_piece):
-            self.active_piece.setX(self.active_piece.getX(Coordinate.GRID) - 1)
+            self.active_piece.set_x(self.active_piece.get_x(Coordinate.GRID) - 1)
 
     def can_move_left(self, piece):
-        new_x = piece.getX(Coordinate.PLAYING_FIELD) - 1
+        new_x = piece.get_x(Coordinate.PLAYING_FIELD) - 1
         return new_x >= 0 and not self.backing_grid.is_collision(new_x,
-                                                                 piece.getY(Coordinate.PLAYING_FIELD),
+                                                                 piece.get_y(Coordinate.PLAYING_FIELD),
                                                                  piece.get_fill_mask())
 
     def move_right(self):
         if self.can_move_right(self.active_piece):
-            self.active_piece.setX(self.active_piece.getX(Coordinate.GRID) + 1)
+            self.active_piece.set_x(self.active_piece.get_x(Coordinate.GRID) + 1)
 
     def can_move_right(self, piece):
-        new_x = piece.getX(Coordinate.PLAYING_FIELD) + 1
+        new_x = piece.get_x(Coordinate.PLAYING_FIELD) + 1
         in_bounds = new_x + piece.get_width() <= self.geometry.get_play_area_width()
-        return in_bounds and not self.backing_grid.is_collision(new_x, piece.getY(Coordinate.PLAYING_FIELD),
+        return in_bounds and not self.backing_grid.is_collision(new_x, piece.get_y(Coordinate.PLAYING_FIELD),
                                                                 piece.get_fill_mask())
 
     def rotate_left(self):
@@ -102,8 +102,8 @@ class Board:
 
         def undo_it(oldX, oldY, coord_type):
             self.active_piece.rotate(Piece.ROTATION_R)
-            self.active_piece.setX(oldX, coord_type)
-            self.active_piece.setY(oldY, coord_type)
+            self.active_piece.set_x(oldX, coord_type)
+            self.active_piece.set_y(oldY, coord_type)
 
         self.__rotate(do_it, undo_it)
 
@@ -113,8 +113,8 @@ class Board:
 
         def undo_it(oldX, oldY, coord_type):
             self.active_piece.rotate(Piece.ROTATION_L)
-            self.active_piece.setX(oldX, coord_type)
-            self.active_piece.setY(oldY, coord_type)
+            self.active_piece.set_x(oldX, coord_type)
+            self.active_piece.set_y(oldY, coord_type)
 
         self.__rotate(do_it, undo_it)
 
@@ -127,8 +127,8 @@ class Board:
         # Use playing-field coordinates because the collision checker expects it.
         coord_type = Coordinate.PLAYING_FIELD
 
-        oldX = self.active_piece.getX(coord_type)
-        oldY = self.active_piece.getY(coord_type)
+        oldX = self.active_piece.get_x(coord_type)
+        oldY = self.active_piece.get_y(coord_type)
         offset = do_rotation()
         newX = oldX + offset[0]
         newY = oldY + offset[1]
@@ -148,8 +148,8 @@ class Board:
 
             if not collided:
                 # finalize the rotation
-                self.active_piece.setX(newX, coord_type)
-                self.active_piece.setY(newY, coord_type)
+                self.active_piece.set_x(newX, coord_type)
+                self.active_piece.set_y(newY, coord_type)
                 success = True
 
         if not success:
@@ -159,7 +159,7 @@ class Board:
         return self.backing_grid.clear_filled_rows()
 
     def __detect_game_over(self):
-        return self.active_piece.getY(Coordinate.GRID) <= self.active_piece_start.getY(Coordinate.GRID)
+        return self.active_piece.get_y(Coordinate.GRID) <= self.active_piece_start.getY(Coordinate.GRID)
 
     def render(self, renderer):
         for piece in self.incoming_queue:

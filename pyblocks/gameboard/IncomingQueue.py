@@ -25,8 +25,8 @@ class IncomingQueue(object):
         vertical_offset = 0
         for piece in self.queue:
             vertical_offset += self.max_piece_height
-            piece.setX(self.origin.getX(Coordinate.GRID))
-            piece.setY(self.origin.getY(Coordinate.GRID) + vertical_offset)
+            piece.set_x(self.origin.getX(Coordinate.GRID))
+            piece.set_y(self.origin.getY(Coordinate.GRID) + vertical_offset)
 
     # Get the first piece in queue and put the given piece at the end
     def play_next_piece(self, new_piece):
