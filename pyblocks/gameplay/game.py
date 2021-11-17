@@ -37,13 +37,13 @@ class Constants:
   # This is relative to the absolute grid (as opposed to the playing field grid)
   PIECE_DROP_POS = (12, 3)
   
-  HIGH_SCORE_FILE = "highscores.dat"
+  HIGH_SCORE_FILE = "../highscores.dat"
   NUM_HIGH_SCORES = 10
 
   MENU_FONT_FILE = "gfx/font/Laundromatic/SFLaundromaticExtended.ttf"
   SCORE_FONT_FILE = "gfx/font/Laundromatic/SFLaundromaticExtended.ttf"
-  TITLE_FONT_FILE = "gfx/font/crackman/crackman.ttf" 
-  SCORE_BANNER_FONT_FILE = "gfx/font/crackman/crackman.ttf" 
+  TITLE_FONT_FILE = "gfx/font/crackman/crackman.ttf"
+  SCORE_BANNER_FONT_FILE = "gfx/font/crackman/crackman.ttf"
   GAME_OVER_FONT_FILE = "gfx/font/crackman/crackman.ttf"
   NAME_ENTRY_FONT_FILE = "gfx/font/crackman/crackman.ttf"
   # Use a monospace font here because there is a character limit for the name
@@ -205,7 +205,4 @@ def run_game():
   
   pygame.quit()
 
-
-if __name__ == "__main__":
-  run_game()
 

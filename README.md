@@ -1,6 +1,6 @@
 # PyBlocks
 
-This is a tetris-like game I wrote in python using the pygame framework.
+This is my own variation of a very popular game. I wrote it in python using the pygame framework.
 This was my first "real" python project, and was largely done to teach myself python.
 Since it was a learning project, there are many things I would do differently, but I am happy with the way it turned out.
 
@@ -19,7 +19,7 @@ $ source .venv/bin/activate
 ```
 To run the game:
 ```shell
-(.venv) $ python game.py
+(.venv) $ python launch.py
 ```
 
 ## Gameplay
