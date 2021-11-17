@@ -49,19 +49,19 @@ class Piece(ABC):
 
     # The x-coordinate relative to the playable grid, in
     # block-sized units (i.e. not pixel position)
-    def set_x(self, x, type=Coordinate.GRID):
-        self.coord.setX(x, type)
+    def set_x(self, x, coord_type=Coordinate.GRID):
+        self.coord.setX(x, coord_type)
 
     # The y-coordinate relative to the playable grid, in
     # block-sized units (i.e. not pixel position)
-    def set_y(self, y, type=Coordinate.GRID):
-        self.coord.setY(y, type)
+    def set_y(self, y, coord_type=Coordinate.GRID):
+        self.coord.setY(y, coord_type)
 
-    def get_x(self, type=Coordinate.GRID):
-        return self.coord.getX(type)
+    def get_x(self, coord_type=Coordinate.GRID):
+        return self.coord.getX(coord_type)
 
-    def get_y(self, type=Coordinate.GRID):
-        return self.coord.getY(type)
+    def get_y(self, coord_type=Coordinate.GRID):
+        return self.coord.getY(coord_type)
 
     # this takes the current rotation into account
     def get_height(self):
@@ -79,4 +79,3 @@ class Piece(ABC):
             if len(row) > max_width:
                 max_width = len(row)
         return max_width
-
