@@ -1,5 +1,5 @@
 import unittest
-from pyblocks.ScoreKeeper import ScoreKeeper
+from gameplay.ScoreKeeper import ScoreKeeper
 
 class TestScoreKeeper(unittest.TestCase):
 

@@ -1,15 +1,15 @@
 from gameboard.BlockRenderer import BlockRenderer
 from gameboard.BgRenderer import BgRenderer
 from gameboard.Board import Board
-from pyblocks.Gameplay import Gameplay
-from pyblocks.Keys import *
-from pyblocks.GameParams import GameParams
+from gameplay.Gameplay import Gameplay
+from gameplay.Keys import *
+from gameplay.GameParams import GameParams
 from geometry.Geometry import Geometry
 from scoreboard.highscorepersistence import *
 from scoreboard.LeaderBoardScreen import LeaderBoardScreen
-from pyblocks.ScoreKeeper import ScoreKeeper
+from gameplay.ScoreKeeper import ScoreKeeper
 from screens.NameEntryScreen import NameEntryScreen
-from pyblocks.eventhandlers import *
+from gameplay.eventhandlers import *
 from sound.audio import *
 
 class Constants:

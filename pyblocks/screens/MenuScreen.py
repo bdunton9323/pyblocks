@@ -1,7 +1,7 @@
 import pygame
 
-from Keys import GameKeys
-from Keys import KeyFunction
+from gameplay.Keys import GameKeys
+from gameplay.Keys import KeyFunction
 
 
 class MenuScreen(object):

@@ -1,6 +1,6 @@
 import pygame
 
-from Keys import GameKeys
+from gameplay.Keys import GameKeys
 
 
 class GameOverScreen(object):
