@@ -1,21 +1,21 @@
 import pygame
 from collections import namedtuple
 
-from . BlockRenderer import BlockRenderer
-from . BgRenderer import BgRenderer
-from . Board import Board
-from . Gameplay import Gameplay
-from . Keys import *
-from . GameParams import GameParams
-from . Geometry import Geometry
-from . highscorepersistence import *
-from . LeaderBoardScreen import LeaderBoardScreen
-from . MenuScreen import MenuScreen
-from . ScoreKeeper import ScoreKeeper
-from . NameEntryScreen import NameEntryScreen
-from . gameover import GameOverScreen
-from . eventhandlers import *
-from . audio import *
+from pyblocks.BlockRenderer import BlockRenderer
+from pyblocks.BgRenderer import BgRenderer
+from pyblocks.Board import Board
+from pyblocks.Gameplay import Gameplay
+from pyblocks.Keys import *
+from pyblocks.GameParams import GameParams
+from pyblocks.Geometry import Geometry
+from pyblocks.highscorepersistence import *
+from pyblocks.LeaderBoardScreen import LeaderBoardScreen
+from pyblocks.MenuScreen import MenuScreen
+from pyblocks.ScoreKeeper import ScoreKeeper
+from pyblocks.NameEntryScreen import NameEntryScreen
+from pyblocks.gameover import GameOverScreen
+from pyblocks.eventhandlers import *
+from pyblocks.audio import *
 
 class Constants:
   FRAME_RATE = 60
@@ -157,7 +157,7 @@ def init_states(game_params):
   return states
   
 
-if __name__ == "__main__":
+def run_game():
   global game_in_progress
 
   params = init_pygame()
@@ -211,5 +211,6 @@ if __name__ == "__main__":
   pygame.quit()
 
 
-
+if __name__ == "__main__":
+  run_game()
 
