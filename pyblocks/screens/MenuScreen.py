@@ -1,7 +1,7 @@
 import pygame
-
 from gameplay.Keys import GameKeys
 from gameplay.Keys import KeyFunction
+from screens.disposition_code import MenuAction
 
 
 class MenuScreen(object):
@@ -12,18 +12,6 @@ class MenuScreen(object):
     BANNER_TEXT = "BLOCKS"
 
     BANNER_COLORS = [(255, 0, 0), (0, 0, 255), (255, 255, 0), (0, 255, 0), (0, 242, 255), (191, 0, 179)]
-
-    # disposition codes to indicate how the menu was exited
-    # Return to game or start a new game
-    PLAY_GAME = 1
-    # Stay in the menu
-    NO_CHANGE = 2
-    # Show the score board
-    HIGH_SCORES = 3
-    # Exit the game
-    QUIT = 4
-    # Start over with a new game
-    NEW_GAME = 5
 
     def __init__(self, screen, font_file, title_font_file, jukebox, key_change_publisher, game_keys, key_mapper):
         self.screen = screen
@@ -100,7 +88,7 @@ class MenuScreen(object):
 
         letters = list(MenuScreen.BANNER_TEXT)
         for letter, color in zip(letters, MenuScreen.BANNER_COLORS):
-            rendered = font.render(letter, 1, color)
+            rendered = font.render(letter, True, color)
             self.banner.append((rendered, (x, y)))
             x += rendered.get_size()[0]
 
@@ -113,7 +101,7 @@ class MenuScreen(object):
         # the key mapping menu needs first access to the key press
         if self.active_menu == self.menus['keys']:
             if self.key_menu_handler.handle_key_press(key, self.selection):
-                return MenuScreen.NO_CHANGE
+                return MenuAction.NO_CHANGE
 
         elif key == self.game_keys.by_id(GameKeys.ENTER):
             self.play_sound()
@@ -131,7 +119,7 @@ class MenuScreen(object):
             if self.selection < 0:
                 self.selection = len(self.active_menu) - 1
 
-        return MenuScreen.NO_CHANGE
+        return MenuAction.NO_CHANGE
 
     def handle_menu_key(self):
         self.play_sound()
@@ -150,35 +138,36 @@ class MenuScreen(object):
             self.selection = 0
         elif self.active_menu not in [self.menus['top_level'], self.menus['top_level_paused']]:
             self.active_menu = self.menus['top_level']
-            return MenuScreen.NO_CHANGE
+            return MenuAction.NO_CHANGE
 
+    # The user has selected an option, so execute whatever it is
     # TODO: this is getting cumbersome.
     def do_menu_action(self):
         if self.active_menu == self.menus['top_level']:
             if self.selection == 0:
-                return MenuScreen.PLAY_GAME
+                return MenuAction.PLAY_GAME
             elif self.selection == 1:
-                return MenuScreen.HIGH_SCORES
+                return MenuAction.SHOW_HIGH_SCORES
             elif self.selection == 2:
                 self.active_menu = self.menus['options']
                 self.selection = 0
-                return MenuScreen.NO_CHANGE
+                return MenuAction.NO_CHANGE
             elif self.selection == 3:
-                return MenuScreen.QUIT
+                return MenuAction.QUIT
 
         elif self.active_menu == self.menus['top_level_paused']:
             if self.selection == 0:
-                return MenuScreen.PLAY_GAME
+                return MenuAction.PLAY_GAME
             elif self.selection == 1:
-                return MenuScreen.NEW_GAME
+                return MenuAction.NEW_GAME
             elif self.selection == 2:
-                return MenuScreen.HIGH_SCORES
+                return MenuAction.SHOW_HIGH_SCORES
             elif self.selection == 3:
                 self.active_menu = self.menus['options']
                 self.selection = 0
-                return MenuScreen.NO_CHANGE
+                return MenuAction.NO_CHANGE
             elif self.selection == 4:
-                return MenuScreen.QUIT
+                return MenuAction.QUIT
 
         elif self.active_menu == self.menus['options']:
             if self.selection == 0:
@@ -195,7 +184,7 @@ class MenuScreen(object):
             elif self.selection == 3:
                 self.active_menu = self.menus['keys']
                 self.selection = 0
-            return MenuScreen.NO_CHANGE
+            return MenuAction.NO_CHANGE
 
         elif self.active_menu == self.menus['music_selection']:
             song = self.menus['music_selection'][self.selection]
@@ -204,7 +193,7 @@ class MenuScreen(object):
         elif self.active_menu == self.menus['keys']:
             if self.selection == 0:
                 pass
-        return MenuScreen.NO_CHANGE
+        return MenuAction.NO_CHANGE
 
     def play_sound(self):
         self.jukebox.play_sound_menu_select()
@@ -244,6 +233,8 @@ class StandardTextInitializer(object):
         self.font = pygame.font.Font(font_file, 50)
         self.screen_size = screen_size
         self.labels = labels
+        self.rendered = {}
+        self.text = {}
 
     def get_labels(self):
         return self.labels
@@ -389,6 +380,8 @@ class KeyMenuHandler(object):
         # keep from building the labels on every frame
         self.dirty = True
         self.publisher = key_change_publisher
+
+        self.labels = []
 
         # This is the order the menu options are presented in. This will be used to
         # get the key function from the menu item index.

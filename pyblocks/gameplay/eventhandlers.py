@@ -1,4 +1,5 @@
 from screens.MenuScreen import MenuScreen
+from screens.disposition_code import MenuAction
 from screens.gameover import GameOverScreen
 from gameplay.Keys import GameKeys
 
@@ -8,6 +9,7 @@ class Mode:
     MENU, NEW_GAME, CONTINUE_GAME, PAUSE, QUIT, GAME_OVER, HIGH_SCORES, NAME_ENTRY = range(0, 8)
 
 
+# Handles key press events that occur while the menu screen is active
 class MenuHandler(object):
     DEFAULT_MODE = Mode.MENU
 
@@ -16,32 +18,30 @@ class MenuHandler(object):
         self.game_in_progress = game_in_progress
 
     # Return a tuple: (continue, new_mode)
-    # - continue: indicates whether to continue or abort the
-    #   event loop for this handler
-    # - new_mode: the mode to enter for the next event loop. Only
-    #   used if continue=False
+    # - continue: indicates whether to continue or abort the event loop for this handler.
+    # - new_mode: the mode to enter for the next event loop. Only used if continue=False.
     def on_key(self, key, game_keys):
         mode = MenuHandler.DEFAULT_MODE
         result = self.menu.on_key(key)
 
-        if result == MenuScreen.PLAY_GAME:
+        if result == MenuAction.PLAY_GAME:
             if self.game_in_progress:
                 mode = Mode.CONTINUE_GAME
             else:
                 mode = Mode.NEW_GAME
-            return (False, mode)
+            return False, mode
 
-        elif result == MenuScreen.HIGH_SCORES:
+        elif result == MenuAction.SHOW_HIGH_SCORES:
             mode = Mode.HIGH_SCORES
-            return (False, mode)
+            return False, mode
 
-        elif result == MenuScreen.QUIT:
+        elif result == MenuAction.QUIT:
             mode = Mode.QUIT
-            return (False, mode)
+            return False, mode
 
-        elif result == MenuScreen.NEW_GAME:
+        elif result == MenuAction.NEW_GAME:
             mode = Mode.NEW_GAME
-            return (False, mode)
+            return False, mode
 
         else:
             return (True, mode)
