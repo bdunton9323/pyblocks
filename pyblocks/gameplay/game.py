@@ -9,6 +9,7 @@ from scoreboard.highscorepersistence import *
 from scoreboard.LeaderBoardScreen import LeaderBoardScreen
 from gameplay.ScoreKeeper import ScoreKeeper
 from screens.NameEntryScreen import NameEntryScreen
+from screens.MenuScreen import MenuScreen
 from gameplay.eventhandlers import *
 from sound.audio import *
 

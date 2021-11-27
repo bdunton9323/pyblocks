@@ -1,12 +1,19 @@
-from screens.MenuScreen import MenuScreen
+from enum import Enum
 from screens.disposition_code import MenuAction
 from screens.gameover import GameOverScreen
 from gameplay.Keys import GameKeys
 
 
 # Enum specifying what state the game is in
-class Mode:
-    MENU, NEW_GAME, CONTINUE_GAME, PAUSE, QUIT, GAME_OVER, HIGH_SCORES, NAME_ENTRY = range(0, 8)
+class Mode(Enum):
+    MENU = 0
+    NEW_GAME = 1
+    CONTINUE_GAME = 2
+    PAUSE = 3
+    QUIT = 4
+    GAME_OVER = 5
+    HIGH_SCORES = 6
+    NAME_ENTRY = 7
 
 
 # Handles key press events that occur while the menu screen is active

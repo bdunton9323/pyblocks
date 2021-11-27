@@ -92,8 +92,7 @@ class MenuScreen(object):
             self.banner.append((rendered, (x, y)))
             x += rendered.get_size()[0]
 
-            # Returns a disposition code for the result of the menu
-
+    # Returns a disposition code for the result of the menu
     def on_key(self, key):
         if key == self.game_keys.by_id(GameKeys.ESCAPE):
             return self.handle_menu_key()
@@ -101,7 +100,7 @@ class MenuScreen(object):
         # the key mapping menu needs first access to the key press
         if self.active_menu == self.menus['keys']:
             if self.key_menu_handler.handle_key_press(key, self.selection):
-                return MenuAction.NO_CHANGE
+                return MenuAction.MENU
 
         elif key == self.game_keys.by_id(GameKeys.ENTER):
             self.play_sound()
@@ -119,7 +118,7 @@ class MenuScreen(object):
             if self.selection < 0:
                 self.selection = len(self.active_menu) - 1
 
-        return MenuAction.NO_CHANGE
+        return MenuAction.MENU
 
     def handle_menu_key(self):
         self.play_sound()
@@ -138,7 +137,7 @@ class MenuScreen(object):
             self.selection = 0
         elif self.active_menu not in [self.menus['top_level'], self.menus['top_level_paused']]:
             self.active_menu = self.menus['top_level']
-            return MenuAction.NO_CHANGE
+            return MenuAction.MENU
 
     # The user has selected an option, so execute whatever it is
     # TODO: this is getting cumbersome.
@@ -151,7 +150,7 @@ class MenuScreen(object):
             elif self.selection == 2:
                 self.active_menu = self.menus['options']
                 self.selection = 0
-                return MenuAction.NO_CHANGE
+                return MenuAction.MENU
             elif self.selection == 3:
                 return MenuAction.QUIT
 
@@ -165,7 +164,7 @@ class MenuScreen(object):
             elif self.selection == 3:
                 self.active_menu = self.menus['options']
                 self.selection = 0
-                return MenuAction.NO_CHANGE
+                return MenuAction.MENU
             elif self.selection == 4:
                 return MenuAction.QUIT
 
@@ -184,7 +183,7 @@ class MenuScreen(object):
             elif self.selection == 3:
                 self.active_menu = self.menus['keys']
                 self.selection = 0
-            return MenuAction.NO_CHANGE
+            return MenuAction.MENU
 
         elif self.active_menu == self.menus['music_selection']:
             song = self.menus['music_selection'][self.selection]
@@ -193,7 +192,7 @@ class MenuScreen(object):
         elif self.active_menu == self.menus['keys']:
             if self.selection == 0:
                 pass
-        return MenuAction.NO_CHANGE
+        return MenuAction.MENU
 
     def play_sound(self):
         self.jukebox.play_sound_menu_select()
