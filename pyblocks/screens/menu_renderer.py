@@ -116,3 +116,18 @@ class HighlightStrategyNormal(object):
 
     def get_highlight_color(self):
         return HighlightStrategyNormal.HIGHLIGHT_COLOR
+
+
+# This highlight strategy highlights a different color if the menu option is waiting for input.
+class HighlightStrategyInputField(object):
+    SPECIAL_HIGHLIGHT = (128, 0, 0)
+    NORMAL_HIGHLIGHT = (0, 0, 255)
+
+    def __init__(self, listening_status_provider):
+        self.listening_status_provider = listening_status_provider
+
+    def get_highlight_color(self):
+        if self.listening_status_provider():
+            return HighlightStrategyInputField.SPECIAL_HIGHLIGHT
+        else:
+            return HighlightStrategyInputField.NORMAL_HIGHLIGHT

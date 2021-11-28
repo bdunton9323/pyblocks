@@ -3,6 +3,7 @@ from screens.disposition_code import MenuAction
 from screens.menu_renderer import StandardTextRenderer
 from screens.menu_renderer import LazyTextRenderer
 from screens.menu_renderer import HighlightStrategyNormal
+from screens.menu_renderer import HighlightStrategyInputField
 from gameplay.Keys import KeyFunction
 
 
@@ -32,7 +33,9 @@ class MenuContextFactory(object):
             lambda name, label_provider: self._get_lazy_builder(name, label_provider))
 
     def build_key_changing_screen(self):
-        return KeySettingMenuContext(self, self.key_change_publisher, self.game_keys, self.key_mapper)
+        return KeySettingMenuContext(self, self.key_change_publisher, self.game_keys, self.key_mapper,
+            lambda name, label_provider, special_highlight_indicator: self._get_lazy_builder_special_highlight(
+                name, label_provider, special_highlight_indicator))
 
     def _get_standard_builder(self, name, labels):
         return MenuRenderInfo(name, StandardTextRenderer(self.font_file, self.screen.get_size(), labels),
@@ -41,6 +44,10 @@ class MenuContextFactory(object):
     def _get_lazy_builder(self, name, label_provider):
         return MenuRenderInfo(name, LazyTextRenderer(label_provider, self.font_file, self.screen.get_size()),
             HighlightStrategyNormal())
+
+    def _get_lazy_builder_special_highlight(self, name, label_provider, special_highlight_indicator):
+        return MenuRenderInfo(name, LazyTextRenderer(label_provider, self.font_file, self.screen.get_size()),
+            HighlightStrategyInputField(special_highlight_indicator))
 
 
 # Abstract base class for all menu and submenu contexts
@@ -156,18 +163,77 @@ class KeySettingMenuContext(MenuContext):
         KeyFunction.ROTATE_LEFT,
         KeyFunction.ROTATE_RIGHT]
 
-    def __init__(self, context_factory, key_change_publisher, game_keys, key_mapper):
-        super(KeySettingMenuContext, self).__init__(context_factory)
+    LABELS_FOR_KEY_FUNCTION = {
+        KeyFunction.MOVE_LEFT: "Move Left: ",
+        KeyFunction.MOVE_RIGHT: "Move Right: ",
+        KeyFunction.MOVE_DOWN: "Move Down: ",
+        KeyFunction.DROP: "Drop Piece: ",
+        KeyFunction.ROTATE_LEFT: "Rotate Left: ",
+        KeyFunction.ROTATE_RIGHT: "Rotate Right: "
+    }
+
+    def __init__(self, context_factory, key_change_publisher, game_keys, key_mapper, render_info_builder):
+        render_info = render_info_builder("Keys", lambda: self.get_labels(), lambda: self.is_listening_for_key())
+        super(KeySettingMenuContext, self).__init__(context_factory, render_info)
         self.key_change_publisher = key_change_publisher
         self.game_keys = game_keys
         self.key_mapper = key_mapper
+        self.dirty = True
         self.listening_for_key = False
+        self.cached_labels = []
+
+        # provides the key name for the given key function
+        self.function_to_key_name = {
+            KeyFunction.MOVE_LEFT: key_mapper.get_key_by_function(KeyFunction.MOVE_LEFT).name,
+            KeyFunction.MOVE_RIGHT: key_mapper.get_key_by_function(KeyFunction.MOVE_RIGHT).name,
+            KeyFunction.MOVE_DOWN: key_mapper.get_key_by_function(KeyFunction.MOVE_DOWN).name,
+            KeyFunction.DROP: key_mapper.get_key_by_function(KeyFunction.DROP).name,
+            KeyFunction.ROTATE_LEFT: key_mapper.get_key_by_function(KeyFunction.ROTATE_LEFT).name,
+            KeyFunction.ROTATE_RIGHT: key_mapper.get_key_by_function(KeyFunction.ROTATE_RIGHT).name
+        }
+
+        # This is the order the menu options are presented in. This will be used to
+        # get the key function based on which menu item is selected.
+        self.index_to_function = [KeyFunction.MOVE_LEFT, KeyFunction.MOVE_RIGHT, KeyFunction.MOVE_DOWN,
+                                  KeyFunction.DROP, KeyFunction.ROTATE_LEFT, KeyFunction.ROTATE_RIGHT]
 
     def get_num_options(self):
-        return
+        return len(self.index_to_function)
 
     def execute_current_option(self):
-        pass
+        self.listening_for_key = True
+        return NextStateInfo(self, MenuAction.MENU)
+
+    def is_listening_for_key(self):
+        return self.listening_for_key
+
+    # key - the Key that was pressed
+    def handle_key_input(self, key):
+        if not self.listening_for_key:
+            return
+
+        # The labels have changed
+        self.dirty = True
+
+        key_function = self.index_to_function[self.get_selected_index()]
+        self.function_to_key_name[key_function] = self.game_keys.by_id(key.id).name
+
+        # Notify all subscribers of the key change
+        self.key_change_publisher.on_key_change(key_function, key)
+        self.listening_for_key = False
+
+    def get_labels(self):
+        if not self.dirty:
+            return self.cached_labels
+
+        self.dirty = False
+
+        new_labels = []
+        for function in self.index_to_function:
+            new_labels.append(self.LABELS_FOR_KEY_FUNCTION[function] + '<' + self.function_to_key_name[function] + '>')
+
+        self.cached_labels = new_labels
+        return self.cached_labels
 
 
 class OptionsMenuContext(MenuContext):
