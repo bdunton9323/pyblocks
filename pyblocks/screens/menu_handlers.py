@@ -67,6 +67,13 @@ class MenuContext(ABC):
     def get_num_options(self):
         return 0
 
+    def is_listening_for_key(self):
+        return False
+
+    # goes along with is_listening_for_key
+    def handle_key_event(self, key):
+        return
+
     def get_render_info(self):
         return self.render_info
 
@@ -96,6 +103,12 @@ class MenuRenderInfo(object):
 
     def get_labels(self):
         pass
+
+    def get_text_renderer(self):
+        return self.text_renderer
+
+    def get_highlight_color(self):
+        return self.highlight_strategy.get_highlight_color()
 
 
 class TopLevelMenuContext(MenuContext):
@@ -152,6 +165,7 @@ class MusicSelectionMenuContext(MenuContext):
     def execute_current_option(self):
         selected_song = self.songs[self.get_selected_index()]
         self.jukebox.set_song(selected_song)
+        return NextStateInfo(self, MenuAction.MENU)
 
 
 class KeySettingMenuContext(MenuContext):
@@ -208,7 +222,7 @@ class KeySettingMenuContext(MenuContext):
         return self.listening_for_key
 
     # key - the Key that was pressed
-    def handle_key_input(self, key):
+    def handle_key_event(self, key):
         if not self.listening_for_key:
             return
 
@@ -283,6 +297,6 @@ class NextStateInfo(object):
     def get_active_menu_screen(self):
         return self.active_menu_screen
 
-    def get_game_state(self):
+    def get_menu_action(self):
         return self.game_state
 

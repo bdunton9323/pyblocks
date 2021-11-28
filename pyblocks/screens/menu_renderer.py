@@ -2,9 +2,59 @@ from pygame.font import Font
 
 
 class MenuRenderer(object):
+    BG_COLOR = (0, 0, 0, 0)
+    BANNER_TEXT = "BLOCKS"
+    BANNER_COLORS = [(255, 0, 0), (0, 0, 255), (255, 255, 0), (0, 255, 0), (0, 242, 255), (191, 0, 179)]
 
-    def __init__(self, menu_info):
-        pass
+    def __init__(self, screen, title_font_file):
+        self.screen = screen
+        self.banner = self._render_banner(MenuRenderer.BANNER_TEXT, MenuRenderer.BANNER_COLORS, title_font_file)
+
+    def _render_banner(self, banner_text, banner_colors, title_font_file):
+        banner = []
+        font = Font(title_font_file, 120)
+        font_size = font.size(banner_text)
+
+        # Get the upper left corner of where the text should go
+        screen_size = self.screen.get_size()
+        x = screen_size[0] // 2 - font_size[0] // 2
+        y = screen_size[1] // 4 - font_size[1] // 2
+
+        letters = list(banner_text)
+        for letter, color in zip(letters, banner_colors):
+            rendered = font.render(letter, True, color)
+            banner.append((rendered, (x, y)))
+            x += rendered.get_size()[0]
+
+        return banner
+
+    def render(self, active_menu_context):
+        self._fill_background()
+        self._highlight_selection(active_menu_context)
+        self._draw_banner()
+        self._draw_text(active_menu_context)
+
+    def _draw_banner(self):
+        for letter in self.banner:
+            self.screen.blit(letter[0], letter[1])
+
+    def _fill_background(self):
+        self.screen.fill(MenuRenderer.BG_COLOR)
+
+    def _highlight_selection(self, active_menu_context):
+        overhang_horiz_px = 20
+        overhang_vert_px = 5
+        item = active_menu_context.get_render_info().get_text_renderer().get_rendered_item(active_menu_context.get_selected_index())
+        left = item[3] - overhang_horiz_px
+        top = item[4] - overhang_vert_px
+        width = item[1] + (2 * overhang_horiz_px)
+        height = item[2] + (2 * overhang_vert_px)
+        color = self.active_menu.get_highlight_color()
+        pygame.draw.rect(self.screen, color, (left, top, width, height), 0)
+
+    def _draw_text(self, active_menu_context):
+        for item in active_menu_context.get_render_info().get_text_renderer().get_rendered_items().values():
+            self.screen.blit(item[0], (item[3], item[4]))
 
 
 class RenderableMenuItem(object):
@@ -49,10 +99,6 @@ class LazyTextRenderer(object):
         # cache the RenderableMenuItems by their label because rendering is expensive.
         self.rendered = {}
 
-    # We will generate our own labels, so this is a no-op
-    def init_text(self):
-        pass
-
     def get_labels(self):
         return self.label_provider.get_labels()
 
@@ -75,6 +121,10 @@ class LazyTextRenderer(object):
     def get_rendered_items(self):
         return self.render_labels(self.get_labels())
 
+    def get_rendered_item(self, label_index):
+        label = self.get_labels()[label_index]
+        return self.get_rendered_items()[label]
+
 
 # Renders all the menu options up front
 class StandardTextRenderer(object):
@@ -82,28 +132,32 @@ class StandardTextRenderer(object):
         self.font = Font(font_file, 50)
         self.screen_size = screen_size
         self.labels = labels
-        self.rendered = {}
         self.text = {}
+        self.rendered = self._render_text()
 
     def get_labels(self):
         return self.labels
 
-    def init_text(self):
-        self.rendered = {}
+    def _render_text(self):
+        rendered = {}
         center_x = self.screen_size[0] // 2
         center_y = self.screen_size[1] // 2
 
         itemindex = 0
-        self.text = {}
         for label in self.labels:
             item = RenderableMenuItem(label, itemindex, center_x, center_y, self.font)
-            self.rendered[label] = item
+            rendered[label] = item
             itemindex += 1
+        return rendered
 
     # The items are in the following format:
     #   {"item name": (renderedText, textWidth, textHeight, xPos, yPos), ...}
     def get_rendered_items(self):
         return self.rendered
+
+    def get_rendered_item(self, label_index):
+        label = self.get_labels()[label_index]
+        return self.get_rendered_items()[label]
 
 
 # A simple highlight strategy where the highlight color is always the same
