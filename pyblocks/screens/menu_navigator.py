@@ -26,7 +26,3 @@ class MenuNavigator(object):
 
     def get_active_menu_state(self):
         return self.navigation_path[-1]
-
-
-
-
