@@ -1,4 +1,5 @@
 from pygame.font import Font
+from pygame.draw import rect
 
 
 class MenuRenderer(object):
@@ -44,17 +45,18 @@ class MenuRenderer(object):
     def _highlight_selection(self, active_menu_context):
         overhang_horiz_px = 20
         overhang_vert_px = 5
-        item = active_menu_context.get_render_info().get_text_renderer().get_rendered_item(active_menu_context.get_selected_index())
-        left = item[3] - overhang_horiz_px
-        top = item[4] - overhang_vert_px
-        width = item[1] + (2 * overhang_horiz_px)
-        height = item[2] + (2 * overhang_vert_px)
-        color = self.active_menu.get_highlight_color()
-        pygame.draw.rect(self.screen, color, (left, top, width, height), 0)
+        item = active_menu_context.get_render_info().get_text_renderer().get_rendered_item(
+            active_menu_context.get_selected_index())
+        left = item.get_x() - overhang_horiz_px
+        top = item.get_y() - overhang_vert_px
+        width = item.get_width() + (2 * overhang_horiz_px)
+        height = item.get_height() + (2 * overhang_vert_px)
+        color = active_menu_context.get_render_info().get_highlight_color()
+        rect(self.screen, color, (left, top, width, height), 0)
 
     def _draw_text(self, active_menu_context):
         for item in active_menu_context.get_render_info().get_text_renderer().get_rendered_items().values():
-            self.screen.blit(item[0], (item[3], item[4]))
+            self.screen.blit(item.get_item_content(), (item.get_x(), item.get_y()))
 
 
 class RenderableMenuItem(object):
@@ -71,20 +73,27 @@ class RenderableMenuItem(object):
         text_size = font.size(label)
         xpos = center_x - (text_size[0] // 2)
         ypos = center_y - (text_size[1] // 2) + (RenderableMenuItem.PADDING * item_index)
-        self.rendered_menu_item = (
-            font.render(label, 1, RenderableMenuItem.TEXT_COLOR),
-            # width of text
-            text_size[0],
-            # height of text
-            text_size[1],
-            # x position on screen of text
-            xpos,
-            # y position on screen of text
-            ypos
-        )
 
-    def get_rendered_item(self):
-        return self.rendered_menu_item
+        self.item_content = font.render(label, 1, RenderableMenuItem.TEXT_COLOR)
+        self.width = text_size[0]
+        self.height = text_size[1]
+        self.x_coord = xpos
+        self.y_coord = ypos
+
+    def get_item_content(self):
+        return self.item_content
+
+    def get_width(self):
+        return self.width
+
+    def get_height(self):
+        return self.height
+
+    def get_x(self):
+        return self.x_coord
+
+    def get_y(self):
+        return self.y_coord
 
 
 # Renders the labels each time they are needed. This allows the menu labels

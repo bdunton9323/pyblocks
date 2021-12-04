@@ -6,7 +6,7 @@ class MenuNavigator(object):
         self.context_factory = context_factory
         # Stack of active menus. Allows us to go into submenus and pop back.
         self.navigation_path = []
-        self.navigation_path.append(context_factory.build_top_level_menu(False))
+        self.navigation_path.append(context_factory.build_top_level_menu_screen(False))
 
     # Returns a MenuAction indicating the disposition of this menu
     def execute_current_option(self):
@@ -28,7 +28,7 @@ class MenuNavigator(object):
 
     def on_pause(self):
         self.navigation_path = []
-        self.navigation_path.append(self.context_factory.build_top_level_menu(True))
+        self.navigation_path.append(self.context_factory.build_top_level_menu_screen(True))
 
     def delegate_key_event(self, key):
         self.get_active_menu_context().handle_key_event(key)

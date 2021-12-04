@@ -1,4 +1,3 @@
-import pygame
 from gameplay.Keys import GameKeys
 from screens.disposition_code import MenuAction
 from screens.menu_renderer import MenuRenderer
@@ -8,6 +7,7 @@ from screens.menu_handlers import MenuContextFactory
 
 class MenuScreen(object):
 
+    # TODO: I left off here. I just need to wire a few things up maybe
     def __init__(self, screen, font_file, title_font_file, jukebox, key_change_publisher, game_keys, key_mapper):
         self.game_keys = game_keys
         self.jukebox = jukebox
@@ -45,4 +45,4 @@ class MenuScreen(object):
         self.jukebox.play_sound_menu_select()
 
     def render(self):
-        self.menu_renderer.render()
+        self.menu_renderer.render(self.menu_navigator.get_active_menu_context())
