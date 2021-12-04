@@ -25,14 +25,18 @@ class MenuNavigator(object):
         self.get_active_menu_context().move_to_previous_option()
 
     def escape(self):
-        self.navigation_path.pop()
+        # escape shouldn't do anything if we're not in a submenu
+        if len(self.navigation_path) > 1:
+            self.navigation_path.pop()
 
     def on_pause_event(self):
+        # this gets called on every game loop, so no-op if already paused
         if not self.game_paused:
             self.navigation_path = []
             self.navigation_path.append(self.context_factory.build_top_level_menu_screen(True))
 
     def on_unpause_event(self):
+        # this gets called on every game loop, so no-op if already unpaused
         if self.game_paused:
             self.navigation_path = []
             self.navigation_path.append(self.context_factory.build_top_level_menu_screen(False))
