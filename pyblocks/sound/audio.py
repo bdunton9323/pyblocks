@@ -32,8 +32,8 @@ class Jukebox(object):
         self.current_music_volume = Jukebox.DEFAULT_MUSIC_VOLUME
         self.set_music_volume(self.current_music_volume)
 
-    def get_available_music(self):
-        return self.music.keys()
+    def get_available_song_titles(self):
+        return list(self.music)
 
     def set_song(self, song_title):
         if song_title in self.music:

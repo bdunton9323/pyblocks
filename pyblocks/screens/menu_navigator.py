@@ -30,13 +30,11 @@ class MenuNavigator(object):
             self.navigation_path.pop()
 
     def on_pause_event(self):
-        # this gets called on every game loop, so no-op if already paused
         if not self.game_paused:
             self.navigation_path = []
             self.navigation_path.append(self.context_factory.build_top_level_menu_screen(True))
 
     def on_unpause_event(self):
-        # this gets called on every game loop, so no-op if already unpaused
         if self.game_paused:
             self.navigation_path = []
             self.navigation_path.append(self.context_factory.build_top_level_menu_screen(False))

@@ -109,7 +109,7 @@ class LazyTextRenderer(object):
         self.rendered = {}
 
     def get_labels(self):
-        return self.label_provider.get_labels()
+        return self.label_provider()
 
     def render_labels(self, labels):
         index = 0

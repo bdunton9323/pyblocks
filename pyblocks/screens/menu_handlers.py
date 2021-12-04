@@ -25,12 +25,12 @@ class MenuContextFactory(object):
             return TopLevelMenuContext(self, lambda name, labels: self._get_standard_builder(name, labels))
 
     def build_music_selection_screen(self):
-        return MusicSelectionMenuContext(self, self.jukebox,
-            lambda name, labels: self._get_standard_builder(name, labels))
+        return MusicSelectionMenuContext(self,
+            lambda name, labels: self._get_standard_builder(name, labels), self.jukebox)
 
     def build_options_screen(self):
         return OptionsMenuContext(self,
-            lambda name, label_provider: self._get_lazy_builder(name, label_provider))
+            lambda name, label_provider: self._get_lazy_builder(name, label_provider),  self.jukebox)
 
     def build_key_changing_screen(self):
         return KeySettingMenuContext(self, self.key_change_publisher, self.game_keys, self.key_mapper,
@@ -153,10 +153,10 @@ class TopLevelPausedMenuContext(MenuContext):
 
 
 class MusicSelectionMenuContext(MenuContext):
-    def __init__(self, context_factory, jukebox, render_info_builder):
-        render_info = render_info_builder("Music Selection", jukebox.get_available_music())
+    def __init__(self, context_factory, render_info_builder, jukebox):
+        render_info = render_info_builder("Music Selection", jukebox.get_available_song_titles())
         super(MusicSelectionMenuContext, self).__init__(context_factory, render_info)
-        self.songs = jukebox.get_available_music()
+        self.songs = jukebox.get_available_song_titles()
         self.jukebox = jukebox
 
     def get_num_options(self):
@@ -258,9 +258,10 @@ class OptionsMenuContext(MenuContext):
     CHANGE_SONG = "Change Song"
     CHANGE_KEYS = "Change Keys"
 
-    def __init__(self, context_factory, render_info_builder):
+    def __init__(self, context_factory, render_info_builder, jukebox):
         render_info = render_info_builder("Options", lambda: self.get_labels())
         super(OptionsMenuContext, self).__init__(context_factory, render_info)
+        self.jukebox = jukebox
         self.sound_enabled = True
         self.music_enabled = True
 
@@ -270,18 +271,24 @@ class OptionsMenuContext(MenuContext):
     def execute_current_option(self):
         if self.get_selected_index() == 0:
             self.toggle_sound()
+            return NextStateInfo(self, MenuAction.MENU)
         elif self.get_selected_index() == 1:
             self.toggle_music()
+            return NextStateInfo(self, MenuAction.MENU)
         elif self.get_selected_index() == 2:
             return NextStateInfo(self.get_context_factory().build_music_selection_screen(), MenuAction.MENU)
         elif self.get_selected_index() == 3:
             return NextStateInfo(self.get_context_factory().build_key_changing_screen(), MenuAction.MENU)
 
     def toggle_sound(self):
+        # this controls the text for the menu item
         self.sound_enabled = not self.sound_enabled
+        self.jukebox.enable_sound(self.sound_enabled)
 
     def toggle_music(self):
+        # this controls the text for the menu item
         self.music_enabled = not self.music_enabled
+        self.jukebox.enable_music(self.music_enabled)
 
     def get_labels(self):
         sound = self.SOUND_ON if self.sound_enabled else self.SOUND_OFF
