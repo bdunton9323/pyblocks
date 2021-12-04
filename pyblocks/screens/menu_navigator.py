@@ -7,6 +7,7 @@ class MenuNavigator(object):
         # Stack of active menus. Allows us to go into submenus and pop back.
         self.navigation_path = []
         self.navigation_path.append(context_factory.build_top_level_menu_screen(False))
+        self.game_paused = False
 
     # Returns a MenuAction indicating the disposition of this menu
     def execute_current_option(self):
@@ -26,9 +27,15 @@ class MenuNavigator(object):
     def escape(self):
         self.navigation_path.pop()
 
-    def on_pause(self):
-        self.navigation_path = []
-        self.navigation_path.append(self.context_factory.build_top_level_menu_screen(True))
+    def on_pause_event(self):
+        if not self.game_paused:
+            self.navigation_path = []
+            self.navigation_path.append(self.context_factory.build_top_level_menu_screen(True))
+
+    def on_unpause_event(self):
+        if self.game_paused:
+            self.navigation_path = []
+            self.navigation_path.append(self.context_factory.build_top_level_menu_screen(False))
 
     def delegate_key_event(self, key):
         self.get_active_menu_context().handle_key_event(key)

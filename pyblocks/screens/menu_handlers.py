@@ -91,7 +91,7 @@ class MenuContext(ABC):
     def move_to_previous_option(self):
         self.selected_index -= 1
         if self.selected_index < 0:
-            self.selected_index = self.get_num_options()
+            self.selected_index = self.get_num_options() - 1
 
 
 # contains everything needed to render the menu

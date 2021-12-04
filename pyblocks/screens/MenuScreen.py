@@ -16,7 +16,10 @@ class MenuScreen(object):
         self.menu_renderer = MenuRenderer(screen, title_font_file)
 
     def set_paused(self, paused):
-        self.menu_navigator.on_pause()
+        if paused:
+            self.menu_navigator.on_pause_event()
+        else:
+            self.menu_navigator.on_unpause_event()
 
     # Returns a disposition code for the result of the menu
     def on_key(self, key):
