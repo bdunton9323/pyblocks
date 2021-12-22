@@ -1,18 +1,29 @@
 
-# Keeps track of where the user is in the menu tree, and facilitates moving around in the menus.
+
 class MenuNavigator(object):
+    """
+    Keeps track of where the user is in the menu tree, and facilitates moving around in the menus.
+    """
 
     def __init__(self, context_factory):
+        """
+        Args:
+            context_factory (screens.menu_handlers.MenuContextFactory): Responsible for constructing the state contexts
+                for each menu and submenu
+        """
         self.context_factory = context_factory
         # Stack of active menus. Allows us to go into submenus and pop back.
         self.navigation_path = []
         self.navigation_path.append(context_factory.build_top_level_menu_screen(False))
         self.game_paused = False
 
-    # Returns a MenuAction indicating the disposition of this menu
     def execute_current_option(self):
+        """
+        Returns:
+            MenuAction: indicates the next game state that resulted from the menu action
+        """
         active_menu = self.get_active_menu_context()
-        next_state_info = self.get_active_menu_context().execute_current_option()
+        next_state_info = active_menu.execute_current_option()
         # If this option goes into a sub-menu, update the navigation path
         if next_state_info.get_active_menu_screen() != active_menu:
             self.navigation_path.append(next_state_info.get_active_menu_screen())

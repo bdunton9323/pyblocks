@@ -4,12 +4,12 @@ from gameboard.Board import Board
 from gameplay.Gameplay import Gameplay
 from gameplay.Keys import *
 from gameplay.GameParams import GameParams
+from gameplay.game_state_builders import MenuStateBuilder
 from geometry.Geometry import Geometry
 from scoreboard.highscorepersistence import *
 from scoreboard.LeaderBoardScreen import LeaderBoardScreen
 from gameplay.ScoreKeeper import ScoreKeeper
 from screens.NameEntryScreen import NameEntryScreen
-from screens.MenuScreen import MenuScreen
 from gameplay.eventhandlers import *
 from sound.audio import *
 
@@ -109,7 +109,7 @@ class Game(object):
     # Returns a Mode representing the next state of the game
     def run_event_loop(self, event_handler):
         # TODO: does this initialize a new clock every time? Do I need to just
-        # keep passing around the original clock?
+        #       keep passing around the original clock?
         clock = pygame.time.Clock()
 
         # Default mode is to start at the main menu
@@ -142,9 +142,10 @@ class Game(object):
     def init_states(self, game_params):
         states = namedtuple("States", ["menu", "game_over", "high_scores", "name_entry"])
 
-        states.menu = MenuScreen(game_params.get_screen(), Constants.MENU_FONT_FILE,
-                                 Constants.TITLE_FONT_FILE, game_params.get_jukebox(),
-                                 game_params.get_key_change_publisher(), Constants.KEYS, game_params.get_key_mapper())
+        menu_state_builder = MenuStateBuilder(game_params.get_screen(), Constants.MENU_FONT_FILE,
+            Constants.TITLE_FONT_FILE, game_params.get_jukebox(), game_params.get_key_change_publisher(),
+            Constants.KEYS, game_params.get_key_mapper())
+        states.menu = menu_state_builder.build()
 
         states.game_over = GameOverScreen(game_params.get_screen(), Constants.GAME_OVER_FONT_FILE, Constants.KEYS)
 

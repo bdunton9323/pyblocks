@@ -8,22 +8,18 @@ from screens.menu_handlers import MenuContextFactory
 class MenuScreen(object):
     """Handles any events that occur while the game in the menu state."""
 
-    def __init__(self, screen, font_file, title_font_file, jukebox, key_change_publisher, game_keys, key_mapper):
+    def __init__(self, jukebox, game_keys, menu_navigator, menu_renderer):
         """
         Args:
-            screen (pygame.display): provides access to the screen for rendering the menu
-            font_file (str): the path to the file containing the font to use for the menu options
-            title_font_file (str): the path to the file containing the font for the title banner
             jukebox (sound.audio.Jukebox): allows the menu to change sound and music
-            key_change_publisher (gameplay.Keys.KeyChangePublisher): Allows the menu to change the key mappings
             game_keys (gameplay.Keys.GameKeys): Allows the menu to see the current key mappings
-            key_mapper (gameplay.Keys.KeyMapper): Maps a game function to a key in the provided GameKeys
+            menu_navigator (screens.menu_navigator.MenuNavigator): Keeps track of the menu navigation state
+            menu_renderer (screens.menu_renderer.MenuRenderer): Renders the menu onto the screen
         """
         self.game_keys = game_keys
         self.jukebox = jukebox
-        context_factory = MenuContextFactory(jukebox, key_change_publisher, game_keys, key_mapper, font_file, screen)
-        self.menu_navigator = MenuNavigator(context_factory)
-        self.menu_renderer = MenuRenderer(screen, title_font_file)
+        self.menu_navigator = menu_navigator
+        self.menu_renderer = menu_renderer
 
     def set_paused(self, paused):
         """Sets whether the game is paused (the menu looks different when the game is paused)"""

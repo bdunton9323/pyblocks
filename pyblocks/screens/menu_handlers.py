@@ -146,9 +146,9 @@ class TopLevelPausedMenuContext(MenuContext):
             return NextStateInfo(self, MenuAction.NEW_GAME)
         elif self.get_selected_index() == 2:
             return NextStateInfo(self, MenuAction.SHOW_HIGH_SCORES)
-        elif self.get_selected_index == 3:
+        elif self.get_selected_index() == 3:
             return NextStateInfo(self.get_context_factory().build_options_screen(), MenuAction.MENU)
-        elif self.get_selected_index == 4:
+        elif self.get_selected_index() == 4:
             return NextStateInfo(self, MenuAction.QUIT)
 
 
