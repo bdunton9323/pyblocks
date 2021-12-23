@@ -42,11 +42,13 @@ class MenuNavigator(object):
 
     def on_pause_event(self):
         if not self.game_paused:
+            self.game_paused = True
             self.navigation_path = []
             self.navigation_path.append(self.context_factory.build_top_level_menu_screen(True))
 
     def on_unpause_event(self):
         if self.game_paused:
+            self.game_paused = False
             self.navigation_path = []
             self.navigation_path.append(self.context_factory.build_top_level_menu_screen(False))
 
