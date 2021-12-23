@@ -142,7 +142,7 @@ class MenuContext(ABC):
     def move_to_next_option(self):
         """ Sets the cursor the next menu option, looping back if it goes past the end. """
         self.selected_index += 1
-        if self.selected_index == self.get_num_options():
+        if self.selected_index >= self.get_num_options():
             self.selected_index = 0
 
     def move_to_previous_option(self):
@@ -192,7 +192,8 @@ class TopLevelMenuContext(MenuContext):
 
 class TopLevelPausedMenuContext(MenuContext):
     def __init__(self, context_factory, render_info_builder):
-        render_info = render_info_builder("Main Paused",
+        render_info = render_info_builder(
+            "Main Paused",
             ["Resume Game", "New Game", "High Scores", "Options", "Quit"])
         super(TopLevelPausedMenuContext, self).__init__(context_factory, render_info)
 

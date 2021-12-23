@@ -67,7 +67,6 @@ class TestTopLevelMenu(unittest.TestCase):
         self.move_down_n(3, menu)
 
         next_state = menu.execute_current_option()
-        expected = NextStateInfo(menu, MenuAction.QUIT)
         self.assertEqual(menu, next_state.active_menu_screen)
         self.assertEqual(MenuAction.QUIT, next_state.get_menu_action())
 
@@ -81,28 +80,95 @@ class TestTopLevelMenu(unittest.TestCase):
         self.assertIsInstance(render_info.get_text_renderer(), StandardTextRenderer)
 
     def test_pausedmenu_labels(self):
-        pass
+        expected_labels = ["Resume Game", "New Game", "High Scores", "Options", "Quit"]
+        menu = self.context_factory.build_top_level_menu_screen(True)
+        actual_labels = menu.get_render_info().get_labels()
+        self.assertListEqual(expected_labels, actual_labels)
 
     def test_pausedmenu_execute_resume_game(self):
-        pass
+        menu = self.context_factory.build_top_level_menu_screen(True)
+        self.assertEqual(0, menu.get_selected_index())
+        next_state = menu.execute_current_option()
+        self.assertEqual(menu, next_state.active_menu_screen)
+        self.assertEqual(MenuAction.PLAY_GAME, next_state.get_menu_action())
 
     def test_pausedmenu_execute_new_game(self):
-        pass
+        menu = self.context_factory.build_top_level_menu_screen(True)
+        self.move_down_n(1, menu)
+
+        next_state = menu.execute_current_option()
+        self.assertEqual(menu, next_state.active_menu_screen)
+        self.assertEqual(MenuAction.NEW_GAME, next_state.get_menu_action())
 
     def test_paused_menu_execute_high_scores(self):
-        pass
+        menu = self.context_factory.build_top_level_menu_screen(True)
+        self.move_down_n(2, menu)
+
+        next_state = menu.execute_current_option()
+        self.assertEqual(menu, next_state.active_menu_screen)
+        self.assertEqual(MenuAction.SHOW_HIGH_SCORES, next_state.get_menu_action())
 
     def test_paused_menu_execute_options(self):
-        pass
+        menu = self.context_factory.build_top_level_menu_screen(True)
+        self.move_down_n(3, menu)
+
+        next_state = menu.execute_current_option()
+        self.assertIsInstance(next_state.active_menu_screen, OptionsMenuContext)
 
     def test_paused_menu_execute_quit(self):
-        pass
+        menu = self.context_factory.build_top_level_menu_screen(True)
+        self.move_down_n(4, menu)
+
+        next_state = menu.execute_current_option()
+        self.assertEqual(menu, next_state.active_menu_screen)
+        self.assertEqual(MenuAction.QUIT, next_state.get_menu_action())
 
     def test_pausedmenu_not_listening_for_key(self):
-        pass
+        menu = self.context_factory.build_top_level_menu_screen(True)
+        self.assertFalse(menu.is_listening_for_key())
 
     def test_pausedmenu_render_info(self):
-        pass
+        menu = self.context_factory.build_top_level_menu_screen(True)
+        render_info = menu.get_render_info()
+        self.assertIsInstance(render_info.get_text_renderer(), StandardTextRenderer)
+
+    def test_musicmenu_labels(self):
+        songlist = ["Song 1", "Song 2", "Song 3"]
+        self.jukebox.get_available_song_titles.return_value = songlist
+        menu = self.context_factory.build_music_selection_screen()
+        self.assertEqual(songlist, menu.get_render_info().get_labels())
+
+    def test_musicmenu_no_songs(self):
+        self.jukebox.get_available_song_titles.return_value = []
+        menu = self.context_factory.build_music_selection_screen()
+        self.assertEqual([], menu.get_render_info().get_labels())
+
+        self.assertEqual(0, menu.get_selected_index())
+        menu.move_to_next_option()
+        self.assertEqual(0, menu.get_selected_index())
+
+    def test_musicmenu_execute_song_selection(self):
+        songlist = ["Song 1", "Song 2", "Song 3"]
+        self.jukebox.get_available_song_titles.return_value = songlist
+        menu = self.context_factory.build_music_selection_screen()
+
+        next_state = menu.execute_current_option()
+        self.assertEqual(menu, next_state.get_active_menu_screen())
+        self.assertEqual(MenuAction.MENU, next_state.get_menu_action())
+        self.jukebox.set_song.assert_called_once_with("Song 1")
+
+    def test_musicmenu_not_listening_for_key(self):
+        menu = self.context_factory.build_music_selection_screen()
+        self.assertFalse(menu.is_listening_for_key())
+
+    def test_musicmenu_render_info(self):
+        self.jukebox.get_available_song_titles.return_value = []
+        menu = self.context_factory.build_music_selection_screen()
+        self.assertIsInstance(menu.get_render_info().get_text_renderer(), StandardTextRenderer)
+
+    
+
+    # TODO: need to test move_to_previous_option at some point
 
     @staticmethod
     def move_down_n(n, menu):
@@ -114,8 +180,3 @@ class TestTopLevelMenu(unittest.TestCase):
         current_path = Path(os.path.dirname(os.path.realpath(__file__)))
         return str(current_path / "resources" / "BPmono.ttf")
 
-
-
-class TestOtherThing(unittest.TestCase):
-    def test_something(self):
-        self.assertTrue(False)
