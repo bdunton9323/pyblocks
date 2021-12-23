@@ -1,8 +1,5 @@
 from gameplay.Keys import GameKeys
 from screens.disposition_code import MenuAction
-from screens.menu_renderer import MenuRenderer
-from screens.menu_navigator import MenuNavigator
-from screens.menu_handlers import MenuContextFactory
 
 
 class MenuScreen(object):

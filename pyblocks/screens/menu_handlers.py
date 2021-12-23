@@ -4,13 +4,26 @@ from screens.menu_renderer import StandardTextRenderer
 from screens.menu_renderer import LazyTextRenderer
 from screens.menu_renderer import HighlightStrategyNormal
 from screens.menu_renderer import HighlightStrategyInputField
+from gameplay.Keys import GameKeys
 from gameplay.Keys import KeyFunction
 
 
 # Responsible for building the MenuContext subclasses
 class MenuContextFactory(object):
+    """
+    Builds the various MenuContexts since they take a lot of dependencies
+    """
 
     def __init__(self, jukebox, key_change_publisher, game_keys, key_mapper, font_file, screen):
+        """
+        Args:
+            jukebox (sound.audio.Jukebox): Provides control over the sound and music
+            key_change_publisher (gameplay.Keys.KeyChangePublisher): allows the menu to change the key mappings
+            game_keys (gameplay.Keys.GameKeys): Provides a registry of available keys in the game
+            key_mapper (gameplay.Keys.KeyMapper): Allows the menu to see the current key mappings
+            font_file (str): the path to the file containing the font to use for the menu options
+            screen (pygame.display): provides access to the screen for rendering the menu
+        """
         self.jukebox = jukebox
         self.key_change_publisher = key_change_publisher
         self.game_keys = game_keys
@@ -25,24 +38,36 @@ class MenuContextFactory(object):
             return TopLevelMenuContext(self, lambda name, labels: self._get_standard_builder(name, labels))
 
     def build_music_selection_screen(self):
-        return MusicSelectionMenuContext(self,
-            lambda name, labels: self._get_standard_builder(name, labels), self.jukebox)
+        return MusicSelectionMenuContext(
+            self,
+            lambda name, labels: self._get_standard_builder(name, labels),
+            self.jukebox)
 
     def build_options_screen(self):
-        return OptionsMenuContext(self,
-            lambda name, label_provider: self._get_lazy_builder(name, label_provider),  self.jukebox)
+        return OptionsMenuContext(
+            self,
+            lambda name, label_provider: self._get_lazy_builder(name, label_provider),
+            self.jukebox)
 
     def build_key_changing_screen(self):
-        return KeySettingMenuContext(self, self.key_change_publisher, self.game_keys, self.key_mapper,
+        return KeySettingMenuContext(
+            self,
+            self.key_change_publisher,
+            self.game_keys,
+            self.key_mapper,
             lambda name, label_provider, special_highlight_indicator: self._get_lazy_builder_special_highlight(
                 name, label_provider, special_highlight_indicator))
 
     def _get_standard_builder(self, name, labels):
-        return MenuRenderInfo(name, StandardTextRenderer(self.font_file, self.screen.get_size(), labels),
+        return MenuRenderInfo(
+            name,
+            StandardTextRenderer(self.font_file, self.screen.get_size(), labels),
             HighlightStrategyNormal())
 
     def _get_lazy_builder(self, name, label_provider):
-        return MenuRenderInfo(name, LazyTextRenderer(label_provider, self.font_file, self.screen.get_size()),
+        return MenuRenderInfo(
+            name,
+            LazyTextRenderer(label_provider, self.font_file, self.screen.get_size()),
             HighlightStrategyNormal())
 
     def _get_lazy_builder_special_highlight(self, name, label_provider, special_highlight_indicator):
@@ -52,7 +77,12 @@ class MenuContextFactory(object):
 
 # Abstract base class for all menu and submenu contexts
 class MenuContext(ABC):
-
+    """
+    Args:
+        context_factory (): allows the menu to build a submenu when needed
+        render_info (screens.menu_handlers.MenuRenderInfo): Encapsulates certain information about the menu state in a
+                way that can be understood by the renderer
+    """
     # context_factory - allows the handler to create a new handler for a submenu it controls
     def __init__(self, context_factory, render_info):
         self.selected_index = 0
@@ -61,34 +91,62 @@ class MenuContext(ABC):
 
     @abstractmethod
     def execute_current_option(self):
+        """ Executes the menu option that is selected """
         return None
 
     @abstractmethod
     def get_num_options(self):
+        """
+        Returns:
+            int: the number of options there are in this menu
+        """
         return 0
 
     def is_listening_for_key(self):
+        """
+        Certain menus can intercept free-form keyboard input rather than just the navigation keys.
+        Returns:
+            bool: True if this menu wants to intercept keys, False if not
+        """
         return False
 
-    # goes along with is_listening_for_key
     def handle_key_event(self, key):
+        """
+        Used in tandem with is_listening_for_key. This is what sends the keypress event to the menu to handle
+        Args:
+            key (gameplay.Keys.Key): the key that was pressed
+        """
         return
 
     def get_render_info(self):
+        """
+        Returns:
+            screens.menu_handlers.MenuRenderInfo: The MenuRenderInfo that is applicable for the current menu state
+        """
         return self.render_info
 
     def get_context_factory(self):
+        """
+        Returns:
+            screens.menu_handlers.MenuContextFactory: The factory that can be ued to build submenus
+        """
         return self.context_factory
 
     def get_selected_index(self):
+        """
+        Returns:
+            The index of the menu item that the cursor is on
+        """
         return self.selected_index
 
     def move_to_next_option(self):
+        """ Sets the cursor the next menu option, looping back if it goes past the end. """
         self.selected_index += 1
         if self.selected_index == self.get_num_options():
             self.selected_index = 0
 
     def move_to_previous_option(self):
+        """ Sets the cursor to the previous menu options, looping back if it goes past the beginning. """
         self.selected_index -= 1
         if self.selected_index < 0:
             self.selected_index = self.get_num_options() - 1
@@ -102,7 +160,7 @@ class MenuRenderInfo(object):
         self.highlight_strategy = highlight_strategy
 
     def get_labels(self):
-        pass
+        return self.text_renderer.get_labels()
 
     def get_text_renderer(self):
         return self.text_renderer
@@ -112,6 +170,8 @@ class MenuRenderInfo(object):
 
 
 class TopLevelMenuContext(MenuContext):
+    """ Represents the main menu, where no game is in progress """
+
     def __init__(self, context_factory, render_info_builder):
         render_info = render_info_builder("Main", ["New Game", "High Scores", "Options", "Quit"])
         super(TopLevelMenuContext, self).__init__(context_factory, render_info)
@@ -123,7 +183,7 @@ class TopLevelMenuContext(MenuContext):
         if self.get_selected_index() == 0:
             return NextStateInfo(self, MenuAction.PLAY_GAME)
         elif self.get_selected_index() == 1:
-            return NextStateInfo(self, MenuAction.HIGH_SCORES)
+            return NextStateInfo(self, MenuAction.SHOW_HIGH_SCORES)
         elif self.get_selected_index() == 2:
             return NextStateInfo(self.get_context_factory().build_options_screen(), MenuAction.MENU)
         elif self.get_selected_index() == 3:
