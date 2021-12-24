@@ -166,6 +166,7 @@ class TestTopLevelMenu(unittest.TestCase):
         self.jukebox.set_song.assert_called_once_with("Song 1")
 
     def test_musicmenu_not_listening_for_key(self):
+        self.jukebox.get_available_song_titles.return_value = ['Song 1']
         menu = self.context_factory.build_music_selection_screen()
         self.assertFalse(menu.is_listening_for_key())
 
@@ -190,24 +191,24 @@ class TestTopLevelMenu(unittest.TestCase):
         self.assertTrue(menu.is_listening_for_key())
 
     def test_keymenu_update_left_key(self):
-        self.run_key_update_test(0, 'J', 'Move Left: <J>')
+        self._run_key_update_test(0, 'J', 'Move Left: <J>')
 
     def test_keymenu_update_right_key(self):
-        self.run_key_update_test(1, 'L', 'Move Right: <L>')
+        self._run_key_update_test(1, 'L', 'Move Right: <L>')
 
     def test_keymenu_update_down_key(self):
-        self.run_key_update_test(2, 'K', 'Move Down: <K>')
+        self._run_key_update_test(2, 'K', 'Move Down: <K>')
 
     def test_keymenu_update_drop_key(self):
-        self.run_key_update_test(3, 'Up', 'Drop Piece: <Up>')
+        self._run_key_update_test(3, 'Up', 'Drop Piece: <Up>')
 
     def test_keymenu_update_rot_left_key(self):
-        self.run_key_update_test(4, 'One', 'Rotate Left: <One>')
+        self._run_key_update_test(4, 'One', 'Rotate Left: <One>')
 
     def test_keymenu_update_rot_right_key(self):
-        self.run_key_update_test(5, 'Two', 'Rotate Right: <Two>')
+        self._run_key_update_test(5, 'Two', 'Rotate Right: <Two>')
 
-    def run_key_update_test(self, label_index, new_key_name, expected_label):
+    def _run_key_update_test(self, label_index, new_key_name, expected_label):
         menu = self.context_factory.build_key_changing_screen()
         self.move_down_n(label_index, menu)
         menu.execute_current_option()
