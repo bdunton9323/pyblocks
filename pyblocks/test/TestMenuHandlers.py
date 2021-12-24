@@ -1,18 +1,20 @@
 import os
 import unittest
 from pathlib import Path
-from pygame import font
-from unittest.mock import Mock
 from unittest.mock import MagicMock
+from unittest.mock import Mock
+
+from pygame import font
+
 from gameplay.Keys import GameKeys
 from gameplay.Keys import KeyMapper
 from screens.disposition_code import MenuAction
+from screens.menu_handlers import KeySettingMenuContext
 from screens.menu_handlers import MenuContextFactory
 from screens.menu_handlers import MusicSelectionMenuContext
-from screens.menu_handlers import KeySettingMenuContext
 from screens.menu_handlers import OptionsMenuContext
-from screens.menu_renderer import StandardTextRenderer
 from screens.menu_renderer import LazyTextRenderer
+from screens.menu_renderer import StandardTextRenderer
 
 
 # TODO: it probably makes sense to have separate test classes for each of the MenuContexts
@@ -31,8 +33,8 @@ class TestTopLevelMenu(unittest.TestCase):
         self.screen = MagicMock()
         font.init()
         self.context_factory = MenuContextFactory(
-                self.jukebox, self.key_change_publisher, self.game_keys,
-                self.key_mapper, self.font_file, self.screen)
+            self.jukebox, self.key_change_publisher, self.game_keys,
+            self.key_mapper, self.font_file, self.screen)
 
     def test_toplevelmenu_labels(self):
         expected_labels = ["New Game", "High Scores", "Options", "Quit"]
