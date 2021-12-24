@@ -106,43 +106,6 @@ class Game(object):
 
         return game_context
 
-    # Returns a Mode representing the next state of the game
-    def run_event_loop(self, event_handler):
-        # TODO: does this initialize a new clock every time? Do I need to just
-        #       keep passing around the original clock?
-        clock = pygame.time.Clock()
-
-        # Default mode is to start at the main menu
-        mode = Mode.MENU
-        keep_going = True
-
-        while keep_going:
-            key = None
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    mode = Mode.QUIT
-                    event_handler.on_quit()
-                    keep_going = False
-
-                elif event.type == pygame.KEYDOWN:
-                    key = Constants.KEYS.from_pygame(event.key)
-                    if key:
-                        new_mode = event_handler.on_key(key)
-                        if new_mode is not None:
-                            keep_going = False
-                            mode = new_mode
-
-            if keep_going:
-                millis = int(1 / float(Constants.FRAME_RATE) * Constants.MILLISECONDS)
-                new_mode = event_handler.on_tick(millis, key)
-                if new_mode is not None:
-                    keep_going = False
-                    mode = new_mode
-                event_handler.on_render()
-                pygame.display.flip()
-                clock.tick(Constants.FRAME_RATE)
-        return mode
-
     def init_states(self, game_params):
         states = namedtuple("States", ["menu", "game_over", "high_scores", "name_entry"])
 
@@ -183,14 +146,14 @@ class Game(object):
             elif mode == Mode.MENU:
                 states.menu.set_paused(self.game_in_progress)
                 handler = MenuHandler(states.menu, self.game_in_progress)
-                mode = self.run_event_loop(handler)
+                mode = GameLoop(handler).run_event_loop()
             elif mode == Mode.NEW_GAME:
                 self.game_in_progress = False
                 game_context = self.new_game(params)
                 gameplay_handler = GamePlayHandler(game_context, Constants.KEYS)
                 mode = Mode.CONTINUE_GAME
             elif mode == Mode.CONTINUE_GAME:
-                mode = self.run_event_loop(gameplay_handler)
+                mode = GameLoop(gameplay_handler).run_event_loop()
             elif mode == Mode.GAME_OVER:
                 self.game_in_progress = False
                 # TODO: keep an instance of HighScoreReader and HighScoreWriter so I don't keep recreating it
@@ -202,10 +165,10 @@ class Game(object):
                 # I can pass two interfaces into GameOverHandler. One knows how to get the
                 # final score, and the other can decide whether the score is a high score.
                 # to determine whether the current score. I have started those in new files.
-                mode = self.run_event_loop(handler)
+                mode = GameLoop(handler).run_event_loop()
             elif mode == Mode.HIGH_SCORES:
                 handler = ScoreBoardHandler(states.high_scores, Constants.KEYS)
-                mode = self.run_event_loop(handler)
+                mode = GameLoop(handler).run_event_loop()
             elif mode == Mode.NAME_ENTRY:
                 # TODO: preconstruct a HighScoreWriter so I don't keep recreating it.
                 handler = NameEntryHandler(
@@ -213,10 +176,35 @@ class Game(object):
                     game_context.score_keeper,
                     HighScoreWriter(Constants.HIGH_SCORE_FILE, Constants.NUM_HIGH_SCORES),
                     Constants.KEYS)
-                mode = self.run_event_loop(handler)
+                mode = GameLoop(handler).run_event_loop()
 
         pygame.quit()
 
 
 class GameLoop(object):
-    pass
+    def __init__(self, event_handler):
+        self.event_handler = event_handler
+        self.clock = pygame.time.Clock()
+
+    def run_event_loop(self):
+        next_mode = None
+
+        while next_mode is None:
+            key = None
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    next_mode = Mode.QUIT
+                    self.event_handler.on_quit()
+
+                elif event.type == pygame.KEYDOWN:
+                    key = Constants.KEYS.from_pygame(event.key)
+                    if key:
+                        next_mode = self.event_handler.on_key(key)
+
+            if next_mode is None:
+                millis = int(1 / float(Constants.FRAME_RATE) * Constants.MILLISECONDS)
+                next_mode = self.event_handler.on_tick(millis, key)
+                self.event_handler.on_render()
+                pygame.display.flip()
+                self.clock.tick(Constants.FRAME_RATE)
+        return next_mode
