@@ -5,6 +5,7 @@ from pygame import font
 from unittest.mock import Mock
 from unittest.mock import MagicMock
 from gameplay.Keys import GameKeys
+from gameplay.Keys import KeyMapper
 from screens.disposition_code import MenuAction
 from screens.menu_handlers import MenuContextFactory
 from screens.menu_handlers import MenuContext
@@ -16,16 +17,20 @@ from screens.menu_handlers import KeySettingMenuContext
 from screens.menu_handlers import OptionsMenuContext
 from screens.menu_handlers import NextStateInfo
 from screens.menu_renderer import StandardTextRenderer
+from screens.menu_renderer import LazyTextRenderer
 
 
+# TODO: it probably makes sense to have separate test classes for each of the MenuContexts
 class TestTopLevelMenu(unittest.TestCase):
 
     def setUp(self):
-        # key_change_publisher, game_keys, key_mapper, font_file, screen
         self.jukebox = Mock()
         self.key_change_publisher = Mock()
+
+        # I could mock these but the real thing is really just a wrapper around a dict, so whatever
         self.game_keys = GameKeys()
-        self.key_mapper = Mock()
+        self.key_mapper = KeyMapper(self.game_keys)
+
         # I could put a font file as a test resource but it's just as easy to change the test if I change the real fonts
         self.font_file = self._get_test_font_file()
         self.screen = MagicMock()
@@ -39,6 +44,14 @@ class TestTopLevelMenu(unittest.TestCase):
         menu = self.context_factory.build_top_level_menu_screen(False)
         actual_labels = menu.get_render_info().get_labels()
         self.assertListEqual(expected_labels, actual_labels)
+
+    def test_toplevelmenu_wrap_navigation(self):
+        menu = self.context_factory.build_top_level_menu_screen(False)
+        self.assertEqual(0, menu.get_selected_index())
+        menu.move_to_previous_option()
+        self.assertEqual(3, menu.get_selected_index())
+        menu.move_to_next_option()
+        self.assertEqual(0, menu.get_selected_index())
 
     def test_toplevelmenu_execute_play_game(self):
         menu = self.context_factory.build_top_level_menu_screen(False)
@@ -166,17 +179,92 @@ class TestTopLevelMenu(unittest.TestCase):
         menu = self.context_factory.build_music_selection_screen()
         self.assertIsInstance(menu.get_render_info().get_text_renderer(), StandardTextRenderer)
 
-    
+    def test_keymenu_default_labels(self):
+        menu = self.context_factory.build_key_changing_screen()
+        actual_labels = menu.get_labels()
+        expected_labels = self.default_key_labels()
+        self.assertEqual(expected_labels, actual_labels)
 
-    # TODO: need to test move_to_previous_option at some point
+    def test_keymenu_not_listening_for_key_by_default(self):
+        menu = self.context_factory.build_key_changing_screen()
+        self.assertFalse(menu.is_listening_for_key())
+
+    def test_keymenu_listening_for_key_after_executing_option(self):
+        menu = self.context_factory.build_key_changing_screen()
+        menu.execute_current_option()
+        self.assertTrue(menu.is_listening_for_key())
+
+    def test_keymenu_update_left_key(self):
+        self.run_key_update_test(0, 'J', 'Move Left: <J>')
+
+    def test_keymenu_update_right_key(self):
+        self.run_key_update_test(1, 'L', 'Move Right: <L>')
+
+    def test_keymenu_update_down_key(self):
+        self.run_key_update_test(2, 'K', 'Move Down: <K>')
+
+    def test_keymenu_update_drop_key(self):
+        self.run_key_update_test(3, 'Up', 'Drop Piece: <Up>')
+
+    def test_keymenu_update_rot_left_key(self):
+        self.run_key_update_test(4, 'One', 'Rotate Left: <One>')
+
+    def test_keymenu_update_rot_right_key(self):
+        self.run_key_update_test(5, 'Two', 'Rotate Right: <Two>')
+
+    def run_key_update_test(self, label_index, new_key_name, expected_label):
+        menu = self.context_factory.build_key_changing_screen()
+        self.move_down_n(label_index, menu)
+        menu.execute_current_option()
+        menu.handle_key_event(self.game_keys.by_name(new_key_name))
+        expected_labels = self.default_key_labels()
+        expected_labels[label_index] = expected_label
+        self.assertEqual(expected_labels, menu.get_labels())
+
+    def test_keymenu_updated_labels_are_cached(self):
+        menu = self.context_factory.build_key_changing_screen()
+        self.assertIs(menu.get_labels(), menu.get_labels(), 'Original labels should have been cached')
+
+        menu.execute_current_option()
+        menu.handle_key_event(self.game_keys.by_name('A'))
+
+        self.assertIs(menu.get_labels(), menu.get_labels(), 'New labels should have been cached')
+
+    def test_keymenu_render_info(self):
+        menu = self.context_factory.build_key_changing_screen()
+        self.assertEqual(self.default_key_labels(), menu.get_render_info().get_labels())
+        self.assertIsInstance(menu.get_render_info().get_text_renderer(), LazyTextRenderer)
+
+    def test_optionsmenu_sound_toggle(self):
+        pass
+
+    def test_optionsmenu_music_toggle(self):
+        pass
+
+    def test_optionsmenu_navigate_to_music_selection(self):
+        pass
+
+    def test_optionsmenu_navigate_to_key_menu(self):
+        pass
 
     @staticmethod
     def move_down_n(n, menu):
+        """ A helper for setting the menu selection index """
         for _ in range(n):
             menu.move_to_next_option()
+
+    @staticmethod
+    def default_key_labels():
+        return [
+            'Move Left: <Left>',
+            'Move Right: <Right>',
+            'Move Down: <Down>',
+            'Drop Piece: <Space>',
+            'Rotate Left: <Z>',
+            'Rotate Right: <X>'
+        ]
 
     @staticmethod
     def _get_test_font_file():
         current_path = Path(os.path.dirname(os.path.realpath(__file__)))
         return str(current_path / "resources" / "BPmono.ttf")
-
