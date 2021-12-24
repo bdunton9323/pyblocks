@@ -127,13 +127,17 @@ class Game(object):
                 elif event.type == pygame.KEYDOWN:
                     key = Constants.KEYS.from_pygame(event.key)
                     if key:
-                        result = event_handler.on_key(key, Constants.KEYS)
-                        keep_going = result[0]
-                        mode = result[1]
+                        new_mode = event_handler.on_key(key)
+                        if new_mode is not None:
+                            keep_going = False
+                            mode = new_mode
 
             if keep_going:
                 millis = int(1 / float(Constants.FRAME_RATE) * Constants.MILLISECONDS)
-                keep_going, mode = event_handler.on_tick(millis, key)
+                new_mode = event_handler.on_tick(millis, key)
+                if new_mode is not None:
+                    keep_going = False
+                    mode = new_mode
                 event_handler.on_render()
                 pygame.display.flip()
                 clock.tick(Constants.FRAME_RATE)
@@ -183,7 +187,7 @@ class Game(object):
             elif mode == Mode.NEW_GAME:
                 self.game_in_progress = False
                 game_context = self.new_game(params)
-                gameplay_handler = GamePlayHandler(game_context)
+                gameplay_handler = GamePlayHandler(game_context, Constants.KEYS)
                 mode = Mode.CONTINUE_GAME
             elif mode == Mode.CONTINUE_GAME:
                 mode = self.run_event_loop(gameplay_handler)
@@ -200,14 +204,19 @@ class Game(object):
                 # to determine whether the current score. I have started those in new files.
                 mode = self.run_event_loop(handler)
             elif mode == Mode.HIGH_SCORES:
-                handler = ScoreBoardHandler(states.high_scores)
+                handler = ScoreBoardHandler(states.high_scores, Constants.KEYS)
                 mode = self.run_event_loop(handler)
             elif mode == Mode.NAME_ENTRY:
                 # TODO: preconstruct a HighScoreWriter so I don't keep recreating it.
-                handler = NameEntryHandler(states.name_entry,
-                                           game_context.score_keeper, HighScoreWriter(
-                        Constants.HIGH_SCORE_FILE, Constants.NUM_HIGH_SCORES))
+                handler = NameEntryHandler(
+                    states.name_entry,
+                    game_context.score_keeper,
+                    HighScoreWriter(Constants.HIGH_SCORE_FILE, Constants.NUM_HIGH_SCORES),
+                    Constants.KEYS)
                 mode = self.run_event_loop(handler)
 
         pygame.quit()
 
+
+class GameLoop(object):
+    pass

@@ -25,39 +25,32 @@ class MenuHandler(object):
         self.game_in_progress = game_in_progress
 
     # Return a tuple: (continue, new_mode)
-    # - continue: indicates whether to continue or abort the event loop for this handler.
-    # - new_mode: the mode to enter for the next event loop. Only used if continue=False.
-    def on_key(self, key, game_keys):
-        mode = MenuHandler.DEFAULT_MODE
+    # - new_mode: the mode to enter, or None if staying in current mode.
+    def on_key(self, key):
         result = self.menu.on_key(key)
 
         if result == MenuAction.PLAY_GAME:
             if self.game_in_progress:
-                mode = Mode.CONTINUE_GAME
+                return Mode.CONTINUE_GAME
             else:
-                mode = Mode.NEW_GAME
-            return False, mode
+                return Mode.NEW_GAME
 
         elif result == MenuAction.SHOW_HIGH_SCORES:
-            mode = Mode.HIGH_SCORES
-            return False, mode
+            return Mode.HIGH_SCORES
 
         elif result == MenuAction.QUIT:
-            mode = Mode.QUIT
-            return False, mode
+            return Mode.QUIT
 
         elif result == MenuAction.NEW_GAME:
-            mode = Mode.NEW_GAME
-            return False, mode
+            return Mode.NEW_GAME
 
-        else:
-            return (True, mode)
+        return None
 
     # called on every frame of the game while this handler's event loop is running
     # millis - the number of milliseconds since the last frame
     # key - the key that was pressed in this frame
     def on_tick(self, millis, key):
-        return (True, MenuHandler.DEFAULT_MODE)
+        return None
 
     # Called upon leaving this event handler's loop (transitioning to a new mode)
     def on_quit(self):
@@ -77,18 +70,18 @@ class GameOverHandler(object):
         self.score_reader = score_reader
         self.score = score
 
-    def on_key(self, key, game_keys):
+    def on_key(self, key):
         result = self.gameover.on_key(key)
         if result == GameOverScreen.DONE:
             if self.score_reader.is_high_score(self.score):
-                return (False, Mode.NAME_ENTRY)
+                return Mode.NAME_ENTRY
             else:
-                return (False, Mode.HIGH_SCORES)
+                return Mode.HIGH_SCORES
         else:
-            return (True, GameOverHandler.DEFAULT_MODE)
+            return GameOverHandler.DEFAULT_MODE
 
     def on_tick(self, millis, key):
-        return (True, GameOverHandler.DEFAULT_MODE)
+        return None
 
     def on_quit(self):
         pass
@@ -100,35 +93,30 @@ class GameOverHandler(object):
 class GamePlayHandler(object):
     DEFAULT_MODE = Mode.CONTINUE_GAME
 
-    def __init__(self, game_context):
+    def __init__(self, game_context, game_keys):
         self.context = game_context
         self.paused = False
+        self.game_keys = game_keys
 
-    def on_key(self, key, game_keys):
-        keep_going = True
-        mode = GamePlayHandler.DEFAULT_MODE
-
-        if key == game_keys.by_id(GameKeys.P):
+    def on_key(self, key):
+        if key == self.game_keys.by_id(GameKeys.P):
             self.paused = not self.paused
-        elif key == game_keys.by_id(GameKeys.ESCAPE):
-            mode = Mode.MENU
-            keep_going = False
+            self.context.bg_renderer.set_paused(self.paused)
 
-        self.context.bg_renderer.set_paused(self.paused)
-        return (keep_going, mode)
+        elif key == self.game_keys.by_id(GameKeys.ESCAPE):
+            return Mode.MENU
+
+        return None
 
     # millis - the number of milliseconds since the last on_tick call
     # key - the key pressed in this frame
     def on_tick(self, millis, key):
-        keep_going = True
-        mode = GamePlayHandler.DEFAULT_MODE
         if not self.paused:
             result = self.context.gameplay.on_tick(millis, key)
             if not result:
-                mode = Mode.GAME_OVER
-                keep_going = False
+                return Mode.GAME_OVER
 
-        return (keep_going, mode)
+        return None
 
     def on_quit(self):
         pass
@@ -147,22 +135,19 @@ class ScoreBoardHandler(object):
     DEFAULT_MODE = Mode.HIGH_SCORES
 
     # screen - a LeaderBoardScreen instance
-    def __init__(self, screen):
+    def __init__(self, screen, game_keys):
         self.screen = screen
         self.screen.refresh_scores()
+        self.game_keys = game_keys
 
-    def on_key(self, key, game_keys):
-        keep_going = True
-        mode = ScoreBoardHandler.DEFAULT_MODE
-
-        if key == game_keys.by_id(GameKeys.ESCAPE) or key == game_keys.by_id(GameKeys.ENTER):
-            mode = Mode.MENU
-            keep_going = False
-
-        return (keep_going, mode)
+    def on_key(self, key):
+        if key == self.game_keys.by_id(GameKeys.ESCAPE) or key == self.game_keys.by_id(GameKeys.ENTER):
+            return Mode.MENU
+        else:
+            return None
 
     def on_tick(self, millis, key):
-        return (True, ScoreBoardHandler.DEFAULT_MODE)
+        return None
 
     def on_quit(self):
         pass
@@ -174,29 +159,27 @@ class ScoreBoardHandler(object):
 class NameEntryHandler(object):
     DEFAULT_MODE = Mode.NAME_ENTRY
 
-    def __init__(self, entry_screen, score_keeper, score_writer):
+    def __init__(self, entry_screen, score_keeper, score_writer, game_keys):
         self.score_keeper = score_keeper
         self.writer = score_writer
         self.entry_screen = entry_screen
+        self.game_keys = game_keys
 
-    def on_key(self, key, game_keys):
-        keep_going = True
-        mode = NameEntryHandler.DEFAULT_MODE
+    def on_key(self, key):
 
-        if key == game_keys.by_id(GameKeys.ESCAPE):
-            mode = Mode.MENU
-            keep_going = False
+        if key == self.game_keys.by_id(GameKeys.ESCAPE):
+            return Mode.MENU
         else:
             keep_going = self.entry_screen.on_key(key)
             if not keep_going:
                 self.writer.write_score(self.entry_screen.get_and_clear_name_entered(),
                                         self.score_keeper.get_score())
-                mode = Mode.MENU
+                return Mode.MENU
 
-        return (keep_going, mode)
+        return None
 
     def on_tick(self, millis, key):
-        return (True, NameEntryHandler.DEFAULT_MODE)
+        return None
 
     def on_quit(self):
         pass
