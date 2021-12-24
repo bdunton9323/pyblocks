@@ -8,14 +8,9 @@ from gameplay.Keys import GameKeys
 from gameplay.Keys import KeyMapper
 from screens.disposition_code import MenuAction
 from screens.menu_handlers import MenuContextFactory
-from screens.menu_handlers import MenuContext
-from screens.menu_handlers import MenuRenderInfo
-from screens.menu_handlers import TopLevelMenuContext
-from screens.menu_handlers import TopLevelPausedMenuContext
 from screens.menu_handlers import MusicSelectionMenuContext
 from screens.menu_handlers import KeySettingMenuContext
 from screens.menu_handlers import OptionsMenuContext
-from screens.menu_handlers import NextStateInfo
 from screens.menu_renderer import StandardTextRenderer
 from screens.menu_renderer import LazyTextRenderer
 
@@ -235,17 +230,88 @@ class TestTopLevelMenu(unittest.TestCase):
         self.assertEqual(self.default_key_labels(), menu.get_render_info().get_labels())
         self.assertIsInstance(menu.get_render_info().get_text_renderer(), LazyTextRenderer)
 
-    def test_optionsmenu_sound_toggle(self):
-        pass
+    def test_optionsmenu_default_labels(self):
+        menu = self.context_factory.build_options_screen()
+        self.assertEqual(self.default_options_labels(), menu.get_labels())
 
-    def test_optionsmenu_music_toggle(self):
-        pass
+    def test_optionsmenu_sound_off_label(self):
+        menu = self.context_factory.build_options_screen()
+        menu.execute_current_option()
+        expected = self.default_options_labels()
+        expected[0] = "Sound On / [Off]"
+        self.assertEqual(expected, menu.get_labels())
+
+    def test_optionsmenu_music_off_label(self):
+        menu = self.context_factory.build_options_screen()
+        self.move_down_n(1, menu)
+        menu.execute_current_option()
+        expected = self.default_options_labels()
+        expected[1] = "Music On / [Off]"
+        self.assertEqual(expected, menu.get_labels())
+
+    def test_optionsmenu_toggle_sound_twice(self):
+        menu = self.context_factory.build_options_screen()
+        menu.execute_current_option()
+        menu.execute_current_option()
+        self.assertEqual(self.default_options_labels(), menu.get_labels())
+
+    def test_optionsmenu_toggle_music_twice(self):
+        menu = self.context_factory.build_options_screen()
+        self.move_down_n(1, menu)
+        menu.execute_current_option()
+        menu.execute_current_option()
+        self.assertEqual(self.default_options_labels(), menu.get_labels())
+
+    def test_optionsmenu_sound_toggle_returns_menu_state(self):
+        menu = self.context_factory.build_options_screen()
+        next_state = menu.execute_current_option()
+        self.assertEqual(MenuAction.MENU, next_state.get_menu_action())
+        self.assertEqual(menu, next_state.get_active_menu_screen())
+
+    def test_optionsmenu_sound_toggle_affects_jukebox(self):
+        menu = self.context_factory.build_options_screen()
+        menu.execute_current_option()
+        self.jukebox.enable_sound.assert_called_once_with(False)
+        self.jukebox.reset_mock()
+        menu.execute_current_option()
+        self.jukebox.enable_sound.assert_called_once_with(True)
+
+    def test_optionsmenu_music_toggle_returns_menu_state(self):
+        menu = self.context_factory.build_options_screen()
+        self.move_down_n(1, menu)
+        next_state = menu.execute_current_option()
+        self.assertEqual(MenuAction.MENU, next_state.get_menu_action())
+        self.assertEqual(menu, next_state.get_active_menu_screen())
+
+    def test_optionsmenu_music_toggle_affects_jukebox(self):
+        menu = self.context_factory.build_options_screen()
+        self.move_down_n(1, menu)
+        menu.execute_current_option()
+        self.jukebox.enable_music.assert_called_once_with(False)
+        self.jukebox.reset_mock()
+        menu.execute_current_option()
+        self.jukebox.enable_music.assert_called_once_with(True)
 
     def test_optionsmenu_navigate_to_music_selection(self):
-        pass
+        self.jukebox.get_available_song_titles.return_value = ["Song 1"]
+        menu = self.context_factory.build_options_screen()
+        self.move_down_n(2, menu)
+        next_state = menu.execute_current_option()
+        self.assertEqual(MenuAction.MENU, next_state.get_menu_action())
+
+        returned_submenu = next_state.get_active_menu_screen()
+        self.assertIsInstance(returned_submenu, MusicSelectionMenuContext)
+        self.assertEqual(["Song 1"], returned_submenu.get_render_info().get_labels(),
+                         "Options menu should have passed the correct songs to the submenu")
 
     def test_optionsmenu_navigate_to_key_menu(self):
-        pass
+        menu = self.context_factory.build_options_screen()
+        self.move_down_n(3, menu)
+        next_state = menu.execute_current_option()
+        self.assertEqual(MenuAction.MENU, next_state.get_menu_action())
+
+        returned_submenu = next_state.get_active_menu_screen()
+        self.assertIsInstance(returned_submenu, KeySettingMenuContext)
 
     @staticmethod
     def move_down_n(n, menu):
@@ -263,6 +329,14 @@ class TestTopLevelMenu(unittest.TestCase):
             'Rotate Left: <Z>',
             'Rotate Right: <X>'
         ]
+
+    @staticmethod
+    def default_options_labels():
+        return [
+            "Sound [On] / Off",
+            "Music [On] / Off",
+            "Change Song",
+            "Change Keys"]
 
     @staticmethod
     def _get_test_font_file():
