@@ -1,6 +1,7 @@
 from gameboard.BlockRenderer import BlockRenderer
 from gameboard.BgRenderer import BgRenderer
 from gameboard.Board import Board
+from gameplay.game_context import GameContext
 from gameplay.Gameplay import Gameplay
 from gameplay.Keys import *
 from gameplay.GameParams import GameParams
@@ -58,7 +59,7 @@ class Constants:
 class Game(object):
 
     def __init__(self):
-        self.game_in_progress = False
+        self.game_context = None
 
     def init_pygame(self):
         # Mixer has to be initialized before pygame.
@@ -89,22 +90,33 @@ class Game(object):
 
         return params
 
-    # Resets the game board and the gameplay state
-    def new_game(self, params):
-        self.game_in_progress = True
-        game_context = namedtuple("GameState",
-                                  ["score_keeper", "block_renderer", "bg_renderer", "board", "gameplay"])
+    def new_game(self, game_params):
+        game_context = GameContext()
+        game_context.game_in_progress = True
         game_context.score_keeper = ScoreKeeper()
-        game_context.block_renderer = BlockRenderer(params.get_screen(), params.get_geometry())
-        game_context.bg_renderer = BgRenderer(params.get_screen(),
-                                              Constants.PLAY_AREA_COORDS_PX, Constants.BLOCK_HEIGHT,
-                                              Constants.BLOCK_HEIGHT, game_context.score_keeper, Constants.SCORE_FONT_FILE)
-        game_context.board = Board(params.get_geometry(), Constants.PIECE_DROP_POS)
-        game_context.gameplay = Gameplay(
-            game_context.board, params.get_geometry(), game_context.score_keeper,
-            params.get_jukebox(), params.get_key_mapper())
 
-        return game_context
+        game_context.block_renderer = BlockRenderer(
+            game_params.get_screen(),
+            game_params.get_geometry())
+
+        game_context.bg_renderer = BgRenderer(
+            game_params.get_screen(),
+            Constants.PLAY_AREA_COORDS_PX,
+            Constants.BLOCK_HEIGHT,
+            Constants.BLOCK_HEIGHT,
+            game_context.score_keeper,
+            Constants.SCORE_FONT_FILE)
+
+        game_context.board = Board(game_params.get_geometry(), Constants.PIECE_DROP_POS)
+
+        game_context.gameplay = Gameplay(
+            game_context.board,
+            game_params.get_geometry(),
+            game_context.score_keeper,
+            game_params.get_jukebox(),
+            game_params.get_key_mapper())
+
+        self.game_context = game_context
 
     def init_states(self, game_params):
         states = namedtuple("States", ["menu", "game_over", "high_scores", "name_entry"])
@@ -129,13 +141,11 @@ class Game(object):
 
     def run_game(self):
         params = self.init_pygame()
-        mode = Mode.MENU
 
+        mode = Mode.MENU
         states = self.init_states(params)
 
-        self.game_in_progress = False
         gameplay_handler = None
-        game_context = None
 
         params.get_jukebox().start_game_music()
 
@@ -144,20 +154,20 @@ class Game(object):
             if mode == Mode.QUIT:
                 keep_playing = False
             elif mode == Mode.MENU:
-                states.menu.set_paused(self.game_in_progress)
-                handler = MenuHandler(states.menu, self.game_in_progress)
+                game_in_progress = False if self.game_context is None else self.game_context.game_in_progress
+                states.menu.set_paused(game_in_progress)
+                handler = MenuHandler(states.menu, game_in_progress)
                 mode = GameLoop(handler).run_event_loop()
             elif mode == Mode.NEW_GAME:
-                self.game_in_progress = False
-                game_context = self.new_game(params)
-                gameplay_handler = GamePlayHandler(game_context, Constants.KEYS)
+                self.new_game(params)
+                gameplay_handler = GamePlayHandler(self.game_context, Constants.KEYS)
                 mode = Mode.CONTINUE_GAME
             elif mode == Mode.CONTINUE_GAME:
                 mode = GameLoop(gameplay_handler).run_event_loop()
             elif mode == Mode.GAME_OVER:
-                self.game_in_progress = False
+                self.game_context.game_in_progress = False
                 # TODO: keep an instance of HighScoreReader and HighScoreWriter so I don't keep recreating it
-                score = game_context.score_keeper.get_score()
+                score = self.game_context.score_keeper.get_score()
                 states.game_over.set_score(score)
                 handler = GameOverHandler(states.game_over, score,
                                           HighScoreReader(Constants.HIGH_SCORE_FILE, Constants.NUM_HIGH_SCORES))
@@ -173,7 +183,7 @@ class Game(object):
                 # TODO: preconstruct a HighScoreWriter so I don't keep recreating it.
                 handler = NameEntryHandler(
                     states.name_entry,
-                    game_context.score_keeper,
+                    self.game_context.score_keeper,
                     HighScoreWriter(Constants.HIGH_SCORE_FILE, Constants.NUM_HIGH_SCORES),
                     Constants.KEYS)
                 mode = GameLoop(handler).run_event_loop()
