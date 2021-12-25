@@ -56,12 +56,26 @@ class Constants:
     KEYS = GameKeys()
 
 
+class PygameContext(object):
+    def __init__(self):
+        self.display = None
+
+    @property
+    def display(self):
+        return self._display
+
+    @display.setter
+    def display(self, val):
+        self._display = val
+
+
 class Game(object):
 
     def __init__(self):
         self.game_context = None
 
-    def init_pygame(self):
+    @staticmethod
+    def init_pygame():
         # Mixer has to be initialized before pygame.
         # http://stackoverflow.com/questions/18273722/pygame-sound-delay
         # http://www.pygame.org/docs/ref/mixer.html#pygame.mixer.pre_init
@@ -72,10 +86,21 @@ class Game(object):
         screen = pygame.display.set_mode(Constants.SCREEN_SIZE, pygame.DOUBLEBUF, 32)
         pygame.display.set_caption("PyBlocks")
 
+        # set the key delay for holding down buttons
+        pygame.key.set_repeat(250, 75)
+
+        pygame_context = PygameContext()
+        pygame_context.display = screen
+        return pygame_context
+
+    @staticmethod
+    def init_game_params(pygame_context):
         params = GameParams()
-        params.set_screen(screen)
-        params.set_geometry(Geometry(Constants.BLOCK_WIDTH,
-                                     Constants.BLOCK_HEIGHT, Constants.PLAY_AREA_COORDS_PX))
+        params.set_screen(pygame_context.display)
+        params.set_geometry(
+            Geometry(Constants.BLOCK_WIDTH,
+                     Constants.BLOCK_HEIGHT,
+                     Constants.PLAY_AREA_COORDS_PX))
         params.set_jukebox(Jukebox(pygame.mixer))
 
         # stuff for controlling what the keys are
@@ -84,9 +109,6 @@ class Game(object):
         key_change_publisher.subscribe(key_mapper.on_key_change)
         params.set_key_change_publisher(key_change_publisher)
         params.set_key_mapper(key_mapper)
-
-        # set the key delay for holding down buttons
-        pygame.key.set_repeat(250, 75)
 
         return params
 
@@ -118,12 +140,18 @@ class Game(object):
 
         self.game_context = game_context
 
-    def init_states(self, game_params):
+    @staticmethod
+    def init_states(game_params):
         states = namedtuple("States", ["menu", "game_over", "high_scores", "name_entry"])
 
-        menu_state_builder = MenuStateBuilder(game_params.get_screen(), Constants.MENU_FONT_FILE,
-            Constants.TITLE_FONT_FILE, game_params.get_jukebox(), game_params.get_key_change_publisher(),
-            Constants.KEYS, game_params.get_key_mapper())
+        menu_state_builder = MenuStateBuilder(
+            game_params.get_screen(),
+            Constants.MENU_FONT_FILE,
+            Constants.TITLE_FONT_FILE,
+            game_params.get_jukebox(),
+            game_params.get_key_change_publisher(),
+            Constants.KEYS,
+            game_params.get_key_mapper())
         states.menu = menu_state_builder.build()
 
         states.game_over = GameOverScreen(game_params.get_screen(), Constants.GAME_OVER_FONT_FILE, Constants.KEYS)
@@ -140,14 +168,15 @@ class Game(object):
         return states
 
     def run_game(self):
-        params = self.init_pygame()
+        pygame_context = self.init_pygame()
+        game_params = self.init_game_params(pygame_context)
 
         mode = Mode.MENU
-        states = self.init_states(params)
+        states = self.init_states(game_params)
 
         gameplay_handler = None
 
-        params.get_jukebox().start_game_music()
+        game_params.get_jukebox().start_game_music()
 
         keep_playing = True
         while keep_playing:
@@ -159,7 +188,7 @@ class Game(object):
                 handler = MenuHandler(states.menu, game_in_progress)
                 mode = GameLoop(handler).run_event_loop()
             elif mode == Mode.NEW_GAME:
-                self.new_game(params)
+                self.new_game(game_params)
                 gameplay_handler = GamePlayHandler(self.game_context, Constants.KEYS)
                 mode = Mode.CONTINUE_GAME
             elif mode == Mode.CONTINUE_GAME:
