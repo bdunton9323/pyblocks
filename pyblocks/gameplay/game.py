@@ -2,6 +2,7 @@ from gameboard.BlockRenderer import BlockRenderer
 from gameboard.BgRenderer import BgRenderer
 from gameboard.Board import Board
 from gameplay.game_context import GameContext
+from gameplay.game_context import GameStates
 from gameplay.Gameplay import Gameplay
 from gameplay.Keys import *
 from gameplay.GameParams import GameParams
@@ -142,7 +143,8 @@ class Game(object):
 
     @staticmethod
     def init_states(game_params):
-        states = namedtuple("States", ["menu", "game_over", "high_scores", "name_entry"])
+
+        states = GameStates()
 
         menu_state_builder = MenuStateBuilder(
             game_params.get_screen(),
@@ -152,16 +154,16 @@ class Game(object):
             game_params.get_key_change_publisher(),
             Constants.KEYS,
             game_params.get_key_mapper())
-        states.menu = menu_state_builder.build()
+        states.menu_state = menu_state_builder.build()
 
-        states.game_over = GameOverScreen(game_params.get_screen(), Constants.GAME_OVER_FONT_FILE, Constants.KEYS)
+        states.game_over_state = GameOverScreen(game_params.get_screen(), Constants.GAME_OVER_FONT_FILE, Constants.KEYS)
 
-        states.high_scores = LeaderBoardScreen(
+        states.high_scores_state = LeaderBoardScreen(
             game_params.get_screen(), HighScoreReader(
                 Constants.HIGH_SCORE_FILE, Constants.NUM_HIGH_SCORES), Constants.SCORE_FONT_FILE,
             Constants.SCORE_BANNER_FONT_FILE)
 
-        states.name_entry = NameEntryScreen(
+        states.name_entry_state = NameEntryScreen(
             game_params.get_screen(), Constants.NAME_ENTRY_FONT_FILE,
             Constants.NAME_ENTRY_TEXT_FONT_FILE, game_params.get_jukebox(), Constants.KEYS)
 
@@ -183,9 +185,12 @@ class Game(object):
             if mode == Mode.QUIT:
                 keep_playing = False
             elif mode == Mode.MENU:
-                game_in_progress = False if self.game_context is None else self.game_context.game_in_progress
-                states.menu.set_paused(game_in_progress)
-                handler = MenuHandler(states.menu, game_in_progress)
+                if self.game_context is None:
+                    game_in_progress = False
+                else:
+                    game_in_progress = True
+                states.menu_state.set_paused(game_in_progress)
+                handler = MenuHandler(states.menu_state, game_in_progress)
                 mode = GameLoop(handler).run_event_loop()
             elif mode == Mode.NEW_GAME:
                 self.new_game(game_params)
@@ -197,8 +202,8 @@ class Game(object):
                 self.game_context.game_in_progress = False
                 # TODO: keep an instance of HighScoreReader and HighScoreWriter so I don't keep recreating it
                 score = self.game_context.score_keeper.get_score()
-                states.game_over.set_score(score)
-                handler = GameOverHandler(states.game_over, score,
+                states.game_over_state.set_score(score)
+                handler = GameOverHandler(states.game_over_state, score,
                                           HighScoreReader(Constants.HIGH_SCORE_FILE, Constants.NUM_HIGH_SCORES))
                 # TODO: GameOverHandler should return ScoreBoard or NameEntry mode.
                 # I can pass two interfaces into GameOverHandler. One knows how to get the
@@ -206,12 +211,12 @@ class Game(object):
                 # to determine whether the current score. I have started those in new files.
                 mode = GameLoop(handler).run_event_loop()
             elif mode == Mode.HIGH_SCORES:
-                handler = ScoreBoardHandler(states.high_scores, Constants.KEYS)
+                handler = ScoreBoardHandler(states.high_scores_state, Constants.KEYS)
                 mode = GameLoop(handler).run_event_loop()
             elif mode == Mode.NAME_ENTRY:
                 # TODO: preconstruct a HighScoreWriter so I don't keep recreating it.
                 handler = NameEntryHandler(
-                    states.name_entry,
+                    states.name_entry_state,
                     self.game_context.score_keeper,
                     HighScoreWriter(Constants.HIGH_SCORE_FILE, Constants.NUM_HIGH_SCORES),
                     Constants.KEYS)

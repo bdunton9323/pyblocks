@@ -56,3 +56,43 @@ class GameContext(object):
     @game_in_progress.setter
     def game_in_progress(self, val):
         self._game_in_progress = val
+
+
+class GameStates(object):
+    def __init__(self):
+        self.menu_state = None
+        self.game_over_state = None
+        self.high_scores_state = None
+        self.name_entry_state = None
+
+    @property
+    def menu_state(self):
+        return self._menu_state
+
+    @menu_state.setter
+    def menu_state(self, val):
+        self._menu_state = val
+
+    @property
+    def game_over_state(self):
+        return self._game_over_state
+
+    @game_over_state.setter
+    def game_over_state(self, val):
+        self._game_over_state = val
+
+    @property
+    def high_scores_state(self):
+        return self._high_scores_state
+
+    @high_scores_state.setter
+    def high_scores_state(self, val):
+        self._high_scores_state = val
+
+    @property
+    def name_entry_state(self):
+        return self._name_entry_state
+
+    @name_entry_state.setter
+    def name_entry_state(self, val):
+        self._name_entry_state = val
