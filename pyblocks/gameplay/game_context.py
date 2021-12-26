@@ -8,7 +8,6 @@ class GameContext(object):
         self.board = None
         self.gameplay = None
         self.game_in_progress = False
-        self.event_handler = None
 
     @property
     def score_keeper(self):
@@ -57,14 +56,6 @@ class GameContext(object):
     @game_in_progress.setter
     def game_in_progress(self, val):
         self._game_in_progress = val
-
-    @property
-    def event_handler(self):
-        return self._event_handler
-
-    @event_handler.setter
-    def event_handler(self, val):
-        self._event_handler = val
 
 
 class GameStates(object):

@@ -191,13 +191,10 @@ class Game(object):
 
         elif mode == Mode.NEW_GAME:
             self.new_game()
-            self.game_context.event_handler = GamePlayHandler(self.game_context, Constants.KEYS)
-            return self.game_context.event_handler
+            return GamePlayHandler(self.game_context, Constants.KEYS)
 
         elif mode == Mode.CONTINUE_GAME:
-            # TODO: does it even matter if we construct a new one or not? Does it just save on one cheap object?
-            # return the existing handler that is already in progress
-            return self.game_context.event_handler
+            return GamePlayHandler(self.game_context, Constants.KEYS)
 
         elif mode == Mode.GAME_OVER:
             self.game_context.game_in_progress = False
