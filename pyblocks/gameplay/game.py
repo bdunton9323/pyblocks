@@ -74,6 +74,8 @@ class Game(object):
 
     def __init__(self):
         self.game_context = None
+        self.game_states = None
+        self.game_params = None
 
     @staticmethod
     def init_pygame():
@@ -94,8 +96,7 @@ class Game(object):
         pygame_context.display = screen
         return pygame_context
 
-    @staticmethod
-    def init_game_params(pygame_context):
+    def init_game_params(self, pygame_context):
         params = GameParams()
         params.set_screen(pygame_context.display)
         params.set_geometry(
@@ -111,118 +112,120 @@ class Game(object):
         params.set_key_change_publisher(key_change_publisher)
         params.set_key_mapper(key_mapper)
 
-        return params
+        self.game_params = params
 
-    def new_game(self, game_params):
+    def new_game(self):
+
         game_context = GameContext()
         game_context.game_in_progress = True
         game_context.score_keeper = ScoreKeeper()
 
         game_context.block_renderer = BlockRenderer(
-            game_params.get_screen(),
-            game_params.get_geometry())
+            self.game_params.get_screen(),
+            self.game_params.get_geometry())
 
         game_context.bg_renderer = BgRenderer(
-            game_params.get_screen(),
+            self.game_params.get_screen(),
             Constants.PLAY_AREA_COORDS_PX,
             Constants.BLOCK_HEIGHT,
             Constants.BLOCK_HEIGHT,
             game_context.score_keeper,
             Constants.SCORE_FONT_FILE)
 
-        game_context.board = Board(game_params.get_geometry(), Constants.PIECE_DROP_POS)
+        game_context.board = Board(self.game_params.get_geometry(), Constants.PIECE_DROP_POS)
 
         game_context.gameplay = Gameplay(
             game_context.board,
-            game_params.get_geometry(),
+            self.game_params.get_geometry(),
             game_context.score_keeper,
-            game_params.get_jukebox(),
-            game_params.get_key_mapper())
+            self.game_params.get_jukebox(),
+            self.game_params.get_key_mapper())
 
         self.game_context = game_context
 
-    @staticmethod
-    def init_states(game_params):
+    def init_game_states(self):
+        params = self.game_params
 
         states = GameStates()
 
         menu_state_builder = MenuStateBuilder(
-            game_params.get_screen(),
+            params.get_screen(),
             Constants.MENU_FONT_FILE,
             Constants.TITLE_FONT_FILE,
-            game_params.get_jukebox(),
-            game_params.get_key_change_publisher(),
+            params.get_jukebox(),
+            params.get_key_change_publisher(),
             Constants.KEYS,
-            game_params.get_key_mapper())
+            params.get_key_mapper())
         states.menu_state = menu_state_builder.build()
 
-        states.game_over_state = GameOverScreen(game_params.get_screen(), Constants.GAME_OVER_FONT_FILE, Constants.KEYS)
+        states.game_over_state = GameOverScreen(params.get_screen(), Constants.GAME_OVER_FONT_FILE, Constants.KEYS)
 
         states.high_scores_state = LeaderBoardScreen(
-            game_params.get_screen(), HighScoreReader(
+            params.get_screen(), HighScoreReader(
                 Constants.HIGH_SCORE_FILE, Constants.NUM_HIGH_SCORES), Constants.SCORE_FONT_FILE,
             Constants.SCORE_BANNER_FONT_FILE)
 
         states.name_entry_state = NameEntryScreen(
-            game_params.get_screen(), Constants.NAME_ENTRY_FONT_FILE,
-            Constants.NAME_ENTRY_TEXT_FONT_FILE, game_params.get_jukebox(), Constants.KEYS)
+            params.get_screen(), Constants.NAME_ENTRY_FONT_FILE,
+            Constants.NAME_ENTRY_TEXT_FONT_FILE, params.get_jukebox(), Constants.KEYS)
 
-        return states
+        self.game_states = states
 
     def run_game(self):
         pygame_context = self.init_pygame()
-        game_params = self.init_game_params(pygame_context)
+        self.init_game_params(pygame_context)
+        self.game_params.get_jukebox().start_game_music()
+        self.init_game_states()
 
         mode = Mode.MENU
-        states = self.init_states(game_params)
+        while mode != Mode.QUIT:
+            event_handler = self.enter_mode(mode)
+            mode = GameLoop(event_handler).run_event_loop()
 
-        gameplay_handler = None
+    def enter_mode(self, mode):
 
-        game_params.get_jukebox().start_game_music()
+        if mode == Mode.MENU:
+            game_in_progress = self.game_context is not None and self.game_context.game_in_progress is True
+            self.game_states.menu_state.set_paused(game_in_progress)
+            return MenuHandler(self.game_states.menu_state, game_in_progress)
 
-        keep_playing = True
-        while keep_playing:
-            if mode == Mode.QUIT:
-                keep_playing = False
+        elif mode == Mode.NEW_GAME:
+            self.new_game()
+            self.game_context.event_handler = GamePlayHandler(self.game_context, Constants.KEYS)
+            return self.game_context.event_handler
 
-            elif mode == Mode.MENU:
-                game_in_progress = self.game_context is not None and self.game_context.game_in_progress is True
-                states.menu_state.set_paused(game_in_progress)
-                handler = MenuHandler(states.menu_state, game_in_progress)
-                mode = GameLoop(handler).run_event_loop()
+        elif mode == Mode.CONTINUE_GAME:
+            # TODO: does it even matter if we construct a new one or not? Does it just save on one cheap object?
+            # return the existing handler that is already in progress
+            return self.game_context.event_handler
 
-            elif mode == Mode.NEW_GAME:
-                self.new_game(game_params)
-                gameplay_handler = GamePlayHandler(self.game_context, Constants.KEYS)
-                mode = Mode.CONTINUE_GAME
+        elif mode == Mode.GAME_OVER:
+            self.game_context.game_in_progress = False
+            score = self.game_context.score_keeper.get_score()
+            self.game_states.game_over_state.set_score(score)
 
-            elif mode == Mode.CONTINUE_GAME:
-                mode = GameLoop(gameplay_handler).run_event_loop()
+            return GameOverHandler(
+                self.game_states.game_over_state, score,
+                HighScoreReader(Constants.HIGH_SCORE_FILE, Constants.NUM_HIGH_SCORES))
 
-            elif mode == Mode.GAME_OVER:
-                self.game_context.game_in_progress = False
-                score = self.game_context.score_keeper.get_score()
-                states.game_over_state.set_score(score)
-                handler = GameOverHandler(states.game_over_state, score,
-                                          HighScoreReader(Constants.HIGH_SCORE_FILE, Constants.NUM_HIGH_SCORES))
-                # I can pass two interfaces into GameOverHandler. One knows how to get the
-                # final score, and the other can decide whether the score is a high score.
-                # to determine whether the current score. I have started those in new files.
-                mode = GameLoop(handler).run_event_loop()
+        elif mode == Mode.HIGH_SCORES:
+            return ScoreBoardHandler(self.game_states.high_scores_state, Constants.KEYS)
 
-            elif mode == Mode.HIGH_SCORES:
-                handler = ScoreBoardHandler(states.high_scores_state, Constants.KEYS)
-                mode = GameLoop(handler).run_event_loop()
-
-            elif mode == Mode.NAME_ENTRY:
-                handler = NameEntryHandler(
-                    states.name_entry_state,
-                    self.game_context.score_keeper,
-                    HighScoreWriter(Constants.HIGH_SCORE_FILE, Constants.NUM_HIGH_SCORES),
-                    Constants.KEYS)
-                mode = GameLoop(handler).run_event_loop()
+        elif mode == Mode.NAME_ENTRY:
+            return NameEntryHandler(
+                self.game_states.name_entry_state,
+                self.game_context.score_keeper,
+                HighScoreWriter(Constants.HIGH_SCORE_FILE, Constants.NUM_HIGH_SCORES),
+                Constants.KEYS)
 
         pygame.quit()
+
+    @staticmethod
+    def get_or_default(cache, key, default):
+        if key in cache:
+            return cache.get(key)
+        cache[key] = default
+        return default
 
 
 class GameLoop(object):
