@@ -184,37 +184,37 @@ class Game(object):
         while keep_playing:
             if mode == Mode.QUIT:
                 keep_playing = False
+
             elif mode == Mode.MENU:
-                if self.game_context is None:
-                    game_in_progress = False
-                else:
-                    game_in_progress = True
+                game_in_progress = self.game_context is not None and self.game_context.game_in_progress is True
                 states.menu_state.set_paused(game_in_progress)
                 handler = MenuHandler(states.menu_state, game_in_progress)
                 mode = GameLoop(handler).run_event_loop()
+
             elif mode == Mode.NEW_GAME:
                 self.new_game(game_params)
                 gameplay_handler = GamePlayHandler(self.game_context, Constants.KEYS)
                 mode = Mode.CONTINUE_GAME
+
             elif mode == Mode.CONTINUE_GAME:
                 mode = GameLoop(gameplay_handler).run_event_loop()
+
             elif mode == Mode.GAME_OVER:
                 self.game_context.game_in_progress = False
-                # TODO: keep an instance of HighScoreReader and HighScoreWriter so I don't keep recreating it
                 score = self.game_context.score_keeper.get_score()
                 states.game_over_state.set_score(score)
                 handler = GameOverHandler(states.game_over_state, score,
                                           HighScoreReader(Constants.HIGH_SCORE_FILE, Constants.NUM_HIGH_SCORES))
-                # TODO: GameOverHandler should return ScoreBoard or NameEntry mode.
                 # I can pass two interfaces into GameOverHandler. One knows how to get the
                 # final score, and the other can decide whether the score is a high score.
                 # to determine whether the current score. I have started those in new files.
                 mode = GameLoop(handler).run_event_loop()
+
             elif mode == Mode.HIGH_SCORES:
                 handler = ScoreBoardHandler(states.high_scores_state, Constants.KEYS)
                 mode = GameLoop(handler).run_event_loop()
+
             elif mode == Mode.NAME_ENTRY:
-                # TODO: preconstruct a HighScoreWriter so I don't keep recreating it.
                 handler = NameEntryHandler(
                     states.name_entry_state,
                     self.game_context.score_keeper,
