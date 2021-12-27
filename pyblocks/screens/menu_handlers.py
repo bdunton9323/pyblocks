@@ -204,6 +204,9 @@ class TopLevelPausedMenuContext(MenuContext):
         if self.get_selected_index() == 0:
             return NextStateInfo(self, MenuAction.PLAY_GAME)
         elif self.get_selected_index() == 1:
+            # This is a hack to make sure the cursor ends up on "resume game" whenever the player escapes to the menu
+            # Otherwise the cursor would be left on "new game" and it could be frustrating.
+            self.selected_index = 0
             return NextStateInfo(self, MenuAction.NEW_GAME)
         elif self.get_selected_index() == 2:
             return NextStateInfo(self, MenuAction.SHOW_HIGH_SCORES)
