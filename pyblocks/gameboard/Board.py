@@ -13,9 +13,11 @@ class Board:
     # Assuming pieces start in their horizontal position
     MAX_PIECE_HEIGHT = 3
 
-    # param drop_pos - the grid coordinates where the new
+    # This is relative to the absolute grid (as opposed to the playing field grid)
+    PIECE_DROP_POS = (12, 3)
+
     # pieces enter the board
-    def __init__(self, geometry, drop_pos):
+    def __init__(self, geometry):
         self.backing_grid = BackingGrid(
             geometry.get_play_area_width(),
             geometry.get_play_area_height())
@@ -25,7 +27,7 @@ class Board:
         # where the "coming next" panel is drawn
         self.incoming_panel_pos = Coordinate(22, 2, geometry, Coordinate.GRID)
         # the position where the next piece comes in
-        self.active_piece_start = Coordinate(drop_pos[0], drop_pos[1], geometry, Coordinate.GRID)
+        self.active_piece_start = Coordinate(self.PIECE_DROP_POS[0], self.PIECE_DROP_POS[1], geometry, Coordinate.GRID)
 
     def set_starting_pieces(self, starting_queue, active_piece):
         self.incoming_queue = IncomingQueue(
