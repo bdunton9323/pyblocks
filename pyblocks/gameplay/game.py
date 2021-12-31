@@ -1,4 +1,5 @@
-from gameplay.eventhandlers import *
+from gameplay.game_component_builders import PygameContext
+from gameplay.event_handlers import *
 from pygame.constants import KEYDOWN
 from pygame.constants import QUIT
 
@@ -70,7 +71,15 @@ class Game(object):
 
 
 class GameLoop(object):
-    def __init__(self, pygame_context, event_handler, game_keys):
+    """ Contains the logic for reacting to events in a particular game mode """
+
+    def __init__(self, pygame_context: PygameContext, event_handler: GameEventHandler, game_keys: GameKeys):
+        """
+        Args:
+            pygame_context (gameplay.game_component_builders.PygameContext): an abstraction around the pygame APIs
+            event_handler (gameplay.event_handlers.GameEventHandler): handles the events that occur during the game loop
+            game_keys (gameplay.Keys.GameKeys): Provides translation of pygame keyboard events to our own internal keys
+        """
         self.pygame_context = pygame_context
         self.event_handler = event_handler
         self.game_keys = game_keys

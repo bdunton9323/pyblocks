@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from enum import Enum
 from screens.disposition_code import MenuAction
 from screens.gameover import GameOverScreen
@@ -16,8 +17,27 @@ class Mode(Enum):
     NAME_ENTRY = 7
 
 
+class GameEventHandler(ABC):
+
+    @abstractmethod
+    def on_key(self, key):
+        pass
+
+    @abstractmethod
+    def on_tick(self, millis, key):
+        pass
+
+    @abstractmethod
+    def on_quit(self):
+        pass
+
+    @staticmethod
+    def on_render(self):
+        pass
+
+
 # Handles key press events that occur while the menu screen is active
-class MenuHandler(object):
+class MenuHandler(GameEventHandler):
     DEFAULT_MODE = Mode.MENU
 
     def __init__(self, menu_screen, game_in_progress):
@@ -60,7 +80,7 @@ class MenuHandler(object):
         self.menu.render()
 
 
-class GameOverHandler(object):
+class GameOverHandler(GameEventHandler):
     DEFAULT_MODE = Mode.GAME_OVER
 
     # score_keeper - provides the final score
@@ -90,7 +110,7 @@ class GameOverHandler(object):
         self.gameover.render()
 
 
-class GamePlayHandler(object):
+class GamePlayHandler(GameEventHandler):
     DEFAULT_MODE = Mode.CONTINUE_GAME
 
     def __init__(self, game_context, game_keys):
@@ -131,7 +151,7 @@ class GamePlayHandler(object):
 
 # Handler for the screen that displays the high scores. This is not for
 # entering your initials.
-class ScoreBoardHandler(object):
+class ScoreBoardHandler(GameEventHandler):
     DEFAULT_MODE = Mode.HIGH_SCORES
 
     # screen - a LeaderBoardScreen instance
@@ -156,7 +176,7 @@ class ScoreBoardHandler(object):
         self.screen.render()
 
 
-class NameEntryHandler(object):
+class NameEntryHandler(GameEventHandler):
     DEFAULT_MODE = Mode.NAME_ENTRY
 
     def __init__(self, entry_screen, score_keeper, score_writer, game_keys):
