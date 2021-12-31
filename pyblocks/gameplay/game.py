@@ -1,7 +1,3 @@
-from gameplay.game_component_builders import GameContextBuilder
-from gameplay.game_component_builders import GameParamsBuilder
-from gameplay.game_component_builders import GameStatesBuilder
-from gameplay.game_component_builders import PygameContextBuilder
 from gameplay.eventhandlers import *
 from pygame.constants import KEYDOWN
 from pygame.constants import QUIT
@@ -14,14 +10,15 @@ class Constants:
 
 class Game(object):
 
-    def __init__(self):
-        self.pygame_context = PygameContextBuilder().init_pygame()
-        self.game_params = GameParamsBuilder().init_game_params(self.pygame_context)
+    def __init__(self, pygame_context_builder, game_params_builder, game_context_builder, game_states_builder):
+        self.pygame_context = pygame_context_builder.init_pygame()
+        self.game_params = game_params_builder.init_game_params(self.pygame_context)
         self.game_params.jukebox.start_game_music()
-        self.game_states = GameStatesBuilder().init_game_states(self.game_params)
+        self.game_states = game_states_builder.init_game_states(self.game_params)
 
         # stores info about the game in progress (we start with no game in progress)
         self.game_context = None
+        self.game_context_builder = game_context_builder
 
     def run_game(self):
         mode = Mode.MENU
@@ -37,7 +34,7 @@ class Game(object):
             return MenuHandler(self.game_states.menu_state, game_in_progress)
 
         elif mode == Mode.NEW_GAME:
-            self.game_context = GameContextBuilder.build_new_game_in_progress(self.game_params)
+            self.game_context = self.game_context_builder.build_new_game_in_progress(self.game_params)
             return GamePlayHandler(self.game_context, self.game_params.keys)
 
         elif mode == Mode.CONTINUE_GAME:
