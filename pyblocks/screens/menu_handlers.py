@@ -4,8 +4,8 @@ from screens.menu_renderer import StandardTextRenderer
 from screens.menu_renderer import LazyTextRenderer
 from screens.menu_renderer import HighlightStrategyNormal
 from screens.menu_renderer import HighlightStrategyInputField
-from gameplay.Keys import GameKeys
-from gameplay.Keys import KeyFunction
+from gameplay.keys import GameKeys
+from gameplay.keys import KeyFunction
 
 
 # Responsible for building the MenuContext subclasses
@@ -18,9 +18,9 @@ class MenuContextFactory(object):
         """
         Args:
             jukebox (sound.audio.Jukebox): Provides control over the sound and music
-            key_change_publisher (gameplay.Keys.KeyChangePublisher): allows the menu to change the key mappings
-            game_keys (gameplay.Keys.GameKeys): Provides a registry of available keys in the game
-            key_mapper (gameplay.Keys.KeyMapper): Allows the menu to see the current key mappings
+            key_change_publisher (gameplay.keys.KeyChangePublisher): allows the menu to change the key mappings
+            game_keys (gameplay.keys.GameKeys): Provides a registry of available keys in the game
+            key_mapper (gameplay.keys.KeyMapper): Allows the menu to see the current key mappings
             font_file (str): the path to the file containing the font to use for the menu options
             screen (pygame.display): provides access to the screen for rendering the menu
         """
@@ -114,7 +114,7 @@ class MenuContext(ABC):
         """
         Used in tandem with is_listening_for_key. This is what sends the keypress event to the menu to handle
         Args:
-            key (gameplay.Keys.Key): the key that was pressed
+            key (gameplay.keys.Key): the key that was pressed
         """
         return
 

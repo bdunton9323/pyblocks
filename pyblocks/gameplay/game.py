@@ -78,7 +78,7 @@ class GameLoop(object):
         Args:
             pygame_context (gameplay.game_component_builders.PygameContext): an abstraction around the pygame APIs
             event_handler (gameplay.event_handlers.GameEventHandler): handles the events that occur during the game loop
-            game_keys (gameplay.Keys.GameKeys): Provides translation of pygame keyboard events to our own internal keys
+            game_keys (gameplay.keys.GameKeys): Provides translation of pygame keyboard events to our own internal keys
         """
         self.pygame_context = pygame_context
         self.event_handler = event_handler

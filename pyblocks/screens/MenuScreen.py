@@ -1,4 +1,4 @@
-from gameplay.Keys import GameKeys
+from gameplay.keys import GameKeys
 from screens.disposition_code import MenuAction
 
 
@@ -9,7 +9,7 @@ class MenuScreen(object):
         """
         Args:
             jukebox (sound.audio.Jukebox): allows the menu to change sound and music
-            game_keys (gameplay.Keys.GameKeys): Allows the menu to see the current key mappings
+            game_keys (gameplay.keys.GameKeys): Allows the menu to see the current key mappings
             menu_navigator (screens.menu_navigator.MenuNavigator): Keeps track of the menu navigation state
             menu_renderer (screens.menu_renderer.MenuRenderer): Renders the menu onto the screen
         """
@@ -29,7 +29,7 @@ class MenuScreen(object):
     def on_key(self, key):
         """Handles a keypress event based on the state the menu is in
         Args:
-            key (gameplay.Keys.Key): the key that was pressed
+            key (gameplay.keys.Key): the key that was pressed
         """
         self.play_sound()
 

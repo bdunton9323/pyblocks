@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from screens.disposition_code import MenuAction
 from screens.gameover import GameOverScreen
-from gameplay.Keys import GameKeys
+from gameplay.keys import GameKeys
 
 
 # Enum specifying what state the game is in

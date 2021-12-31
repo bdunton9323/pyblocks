@@ -1,5 +1,5 @@
 from pieces.PieceFactory import PieceFactory
-from gameplay.Keys import KeyFunction
+from gameplay.keys import KeyFunction
 
 
 class Gameplay(object):

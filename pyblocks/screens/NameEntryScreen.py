@@ -1,6 +1,6 @@
 import pygame
 
-from gameplay.Keys import GameKeys
+from gameplay.keys import GameKeys
 
 
 # handles entry of user initials

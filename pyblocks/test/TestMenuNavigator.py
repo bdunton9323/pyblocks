@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import Mock
-from gameplay.Keys import GameKeys
+from gameplay.keys import GameKeys
 from screens.disposition_code import MenuAction
 from screens.menu_navigator import MenuNavigator
 

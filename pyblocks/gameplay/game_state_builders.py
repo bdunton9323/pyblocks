@@ -17,9 +17,9 @@ class MenuStateBuilder:
             font_file (str): the path to the file containing the font to use for the menu options
             title_font_file (str): the path to the file containing the font for the title banner
             jukebox (sound.audio.Jukebox): allows the menu to change sound and music
-            key_change_publisher (gameplay.Keys.KeyChangePublisher): Allows the menu to change the key mappings
-            game_keys (gameplay.Keys.GameKeys): Allows the menu to see the current key mappings
-            key_mapper (gameplay.Keys.KeyMapper): Maps a game function to a key in the provided GameKeys
+            key_change_publisher (gameplay.keys.KeyChangePublisher): Allows the menu to change the key mappings
+            game_keys (gameplay.keys.GameKeys): Allows the menu to see the current key mappings
+            key_mapper (gameplay.keys.KeyMapper): Maps a game function to a key in the provided GameKeys
         """
         self.screen = screen
         self.font_file = font_file

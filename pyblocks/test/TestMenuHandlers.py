@@ -6,8 +6,8 @@ from unittest.mock import Mock
 
 from pygame import font
 
-from gameplay.Keys import GameKeys
-from gameplay.Keys import KeyMapper
+from gameplay.keys import GameKeys
+from gameplay.keys import KeyMapper
 from screens.disposition_code import MenuAction
 from screens.menu_handlers import KeySettingMenuContext
 from screens.menu_handlers import MenuContextFactory

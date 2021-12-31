@@ -1,5 +1,5 @@
 import unittest
-from gameplay.ScoreKeeper import ScoreKeeper
+from gameplay.score_keeper import ScoreKeeper
 
 class TestScoreKeeper(unittest.TestCase):
 
